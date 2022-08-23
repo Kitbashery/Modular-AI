@@ -1,7 +1,7 @@
 All code contributions are subject to the following requirements:
 
 All C# code must be up to Microsoft's [C# Coding Conventions](https://docs.microsoft.com/en-us/dotnet/csharp/fundamentals/coding-style/coding-conventions).
-In the past Unity used conventions like using `m_variableName` and such practices can still be found in legacy code. However going forward Microsoft's conventions now the standard.
+In the past Unity used conventions like using `m_variableName` and such practices can still be found in legacy code. However going forward Microsoft's conventions are now the standard.
 
 In addition to the C# coding standards there is a prefered comment and region structure to follow.
 
@@ -30,9 +30,11 @@ Additionally over any public property field that will be displayed in Unity's in
 
 Sometimes with very obviouslty named fields that are self explanitory it isn't necessary to add a tooltip attribute, but in most cases it is prefered.
 
+In some cases it is prefered to be more strict than Microsoft's conventions such as `var` is rarely if ever used, instead a known type should be used.
+Additionally when checking if statements `== true/false` is always used instead of `if(variableName)` These two practices are done to reduce ambiguity.
 
 After putting in a pull request it is helpful (but not necessary) to also document them by putting in a pull request to [The documentation repo](https://github.com/Kitbashery/kitbashery.github.io/tree/main/docs) and update the docs.
 Doing so however does not mean your additions/changes will be accepted so it may be best to add docs after your changes have been merged or let an official developer document the changes.
 
 
-Code that doesn't follow these guidelines may not be merged untill it is revised and/or fits within the scope of the project.
+Code that deviates to far from these guidelines may not be merged untill it is revised and/or fits within the scope of the project.
