@@ -5,7 +5,7 @@ Modular AI is an inspector based visual behaviour designer.
 
 ## Features:
 * Implements competeing utility theory behaviours for dynamic AI behaviours.
-* Zero expensive calls to reflection or string comparisons.
+* Zero calls to reflection or string comparisons.
 * Behaviours can be fully configured during runtime.
 * Not tied to a specific pathfinding solution.
 
