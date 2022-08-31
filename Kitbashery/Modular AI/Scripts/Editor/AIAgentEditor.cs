@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -34,7 +34,7 @@ Need support or additional features? Please visit https://kitbashery.com/
 
 namespace Kitbashery.AI
 {
-    [CustomEditor(typeof(AIAgent))]
+    [CustomEditor(typeof(AIAgent)), CanEditMultipleObjects]
     public class AIAgentEditor : Editor
     {
         #region Properties:
@@ -72,7 +72,7 @@ namespace Kitbashery.AI
 
         private bool needsRefresh = false;
 
-        SerializedProperty behaviourList, preActionExecution, postActionExecution, debugMode, debugLevel, scoreType, scoreThreshold;
+        SerializedProperty behaviours, preActionExecution, postActionExecution, debugMode, debugLevel, scoreType, scoreThreshold;
 
         #endregion
 
@@ -80,7 +80,7 @@ namespace Kitbashery.AI
 
         private void OnEnable()
         {
-            behaviourList = serializedObject.FindProperty("behaviours");
+            behaviours = serializedObject.FindProperty("behaviours");
             debugMode = serializedObject.FindProperty("debugMode");
             debugLevel = serializedObject.FindProperty("debugLevel");
             preActionExecution = serializedObject.FindProperty("preActionExecution");
@@ -143,11 +143,9 @@ namespace Kitbashery.AI
                 {
                     EditorGUILayout.BeginVertical(EditorStyles.helpBox);
                     DrawPagination(self);
-                    DrawBehaviourOptions(self);
+                    DrawBehaviourOptions(self, behaviours.GetArrayElementAtIndex(pagination - 1));
                     EditorGUILayout.Space();
-                    DrawConditionListGUI(self, pagination - 1);
-                    EditorGUILayout.Space();
-                    DrawActionListGUI(self, pagination - 1);
+                    DrawBehaviourList(behaviours, pagination - 1);
                     EditorGUILayout.Space();
                     EditorGUILayout.EndVertical();
                 }
@@ -288,14 +286,13 @@ namespace Kitbashery.AI
             }
             if (GUILayout.Button(new GUIContent("+", "Add Behaviour"), EditorStyles.miniButtonRight, GUILayout.Width(22)))
             {
-                self.behaviours.Add(new AIBehaviour("New Behaviour " + (self.behaviours.Count + 1), new List<BehaviourEvent>(), new List<BehaviourEvent>()));
-                behaviourList.serializedObject.ApplyModifiedProperties();
-                behaviourList.serializedObject.Update();
-                pagination = self.behaviours.Count;
+                behaviours.InsertArrayElementAtIndex(behaviours.arraySize);
+                behaviours.GetArrayElementAtIndex(behaviours.arraySize - 1).FindPropertyRelative("name").stringValue = "New Behaviour " + (behaviours.arraySize);
+                pagination = behaviours.arraySize;
             }
-            if (pagination > self.behaviours.Count)
+            if (pagination > behaviours.arraySize)
             {
-                pagination = self.behaviours.Count;
+                pagination = behaviours.arraySize;
             }
             if (pagination < 1)
             {
@@ -335,13 +332,13 @@ namespace Kitbashery.AI
             }
         }
 
-        public void DrawBehaviourOptions(AIAgent self)
+        public void DrawBehaviourOptions(AIAgent self, SerializedProperty behaviour)
         {
             GUILayout.Box("", MAI_EditorUtility.thickHorizontalLine);
             if (renaming == true)
             {
                 EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
-                self.behaviours[pagination - 1].name = EditorGUILayout.TextField(self.behaviours[pagination - 1].name);
+                behaviour.FindPropertyRelative("name").stringValue = EditorGUILayout.TextField(behaviour.FindPropertyRelative("name").stringValue);
                 if (GUILayout.Button("Apply", EditorStyles.miniButton))
                 {
                     renaming = false;
@@ -351,12 +348,16 @@ namespace Kitbashery.AI
             else
             {
                 EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
-                EditorGUILayout.LabelField(self.behaviours[pagination - 1].name, MAI_EditorUtility.centeredLabel, GUILayout.ExpandWidth(true));
-                if (self.behaviours.Count > 1)
+                if (renaming == false && GUILayout.Button(behaviour.FindPropertyRelative("name").stringValue, MAI_EditorUtility.centeredLabel, GUILayout.ExpandWidth(true)))
+                {
+                    renaming = true;
+                }
+                //EditorGUILayout.LabelField(behaviour.FindPropertyRelative("name").stringValue, MAI_EditorUtility.centeredLabel, GUILayout.ExpandWidth(true));
+                if (behaviours.arraySize > 1)
                 {
                     if (GUILayout.Button(new GUIContent("", "Remove Behaviour"), "OL Minus", GUILayout.Width(20)))
                     {
-                        self.behaviours.Remove(self.behaviours[pagination - 1]);
+                        behaviours.DeleteArrayElementAtIndex(pagination - 1);
                         if (pagination > 1)
                         {
                             pagination--;
@@ -365,6 +366,7 @@ namespace Kitbashery.AI
                 }
                 EditorGUILayout.EndHorizontal();
 
+                /*
                 GUILayout.Box("", MAI_EditorUtility.horizontalLine);
 
                 EditorGUILayout.BeginHorizontal();
@@ -385,300 +387,292 @@ namespace Kitbashery.AI
                 }
                 if (GUILayout.Button("Duplicate", EditorStyles.miniButtonRight))
                 {
-                    if (copied != null)
-                    {
-                        self.behaviours.Add(new AIBehaviour(self.behaviours[pagination - 1].name + " (Copy)", self.behaviours[pagination - 1].conditions, self.behaviours[pagination - 1].actions));
-                        pagination = self.behaviours.Count;
-                    }
+                    self.behaviours.Add(new AIBehaviour(self.behaviours[pagination - 1].name + " (Copy)", self.behaviours[pagination - 1].conditions, self.behaviours[pagination - 1].actions));
+                    pagination = self.behaviours.Count;
                 }
                 EditorGUILayout.EndHorizontal();
+                */
             }
 
             GUILayout.Box("", MAI_EditorUtility.horizontalLine);
             DrawBrokenReferenceNotice(self);
         }
 
-        public void DrawConditionListGUI(AIAgent self, int page)
+        public void DrawBehaviourList(SerializedProperty list, int page)
         {
-            showConditions = MAI_EditorUtility.DrawFoldout(showConditions, "Conditions:");
-            if (showConditions)
-            {
-                // Collapse open folouts:
-                if (showActions == true || showEvents == true || showBehaviourHelp == true)
-                {
-                    showActions = false;
-                    showEvents = false;
-                    showBehaviourHelp = false;
-                }
-
-                // Draw conditions:
-                EditorGUILayout.BeginVertical("box");
-                if (self.behaviours[page].conditions != null && self.behaviours[page].conditions.Count > 0)
-                {
-                    GUILayout.Box("", MAI_EditorUtility.thickHorizontalLine);
-                    for (int c = self.behaviours[page].conditions.Count - 1; c >= 0; c--)
-                    {
-                        if (self.behaviours[page].conditions[c].instance != null)
-                        {
-                            EditorGUILayout.BeginHorizontal();
-                            EditorGUILayout.BeginVertical(EditorStyles.miniButtonLeft, GUILayout.Width(20));                         
-                            self.behaviours[page].conditions[c].score = Mathf.Clamp(EditorGUILayout.IntField(self.behaviours[page].conditions[c].score, MAI_EditorUtility.centeredMiniLabel, GUILayout.Width(20)), 1, 999);
-                            EditorGUILayout.EndVertical();
-                            EditorGUILayout.BeginVertical(EditorStyles.miniButtonMid);
-                            GUILayout.Label(self.behaviours[page].conditions[c].name, MAI_EditorUtility.centeredMiniLabel);
-                            EditorGUILayout.EndVertical();
-                            EditorGUILayout.BeginVertical(EditorStyles.miniButtonRight, GUILayout.Width(30));
-                            if (GUILayout.Button(self.behaviours[page].conditions[c].state.ToString(), MAI_EditorUtility.centeredMiniLabel))
-                            {
-                                self.behaviours[page].conditions[c].state = !self.behaviours[page].conditions[c].state;
-                            }
-                            EditorGUILayout.EndVertical();
-
-                            if (GUILayout.Button("", "OL Minus", GUILayout.Width(25)))
-                            {
-                                self.behaviours[page].conditions.Remove(self.behaviours[page].conditions[c]);
-                            }
-                            EditorGUILayout.EndHorizontal();
-                        }
-                        else
-                        {
-                            EditorGUILayout.HelpBox("Missing module for " + self.behaviours[page].conditions[c].name, MessageType.Warning);
-                            EditorGUILayout.LabelField("Class name changed? Update it below then attempt repair:");
-                            self.behaviours[page].conditions[c].moduleName = EditorGUILayout.TextField(self.behaviours[page].conditions[c].moduleName);
-                            EditorGUILayout.LabelField("OR");
-                            if (GUILayout.Button("Remove Condition", EditorStyles.miniButton))
-                            {
-                                self.behaviours[page].conditions.Remove(self.behaviours[page].conditions[c]);
-                            }
-
-                            self.hasBrokenReferences = true;
-                        }
-
-                        GUILayout.Box("", MAI_EditorUtility.thickHorizontalLine);
-                    }
-                }
-                DrawConditionCreationGUI(self.behaviours[page]);
-                EditorGUILayout.EndVertical();
-            }
-            else
-            {
-                addingCondition = false;
-            }
+            DrawEventList(behaviours.GetArrayElementAtIndex(page).FindPropertyRelative("conditions"), ref showConditions, "Conditions", true);
+            EditorGUILayout.Space();
+            DrawEventList(behaviours.GetArrayElementAtIndex(page).FindPropertyRelative("actions"), ref showActions, "Actions", false);
         }
 
-        public void DrawConditionCreationGUI(AIBehaviour behaviour)
+        public void DrawEventList(SerializedProperty list, ref bool fold, string label, bool isCondition)
         {
-            if (addingCondition == false)
+            fold = MAI_EditorUtility.DrawFoldout(fold, label);
+            if (fold == true)
             {
-                EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
-                EditorGUILayout.LabelField("Add Condition:", MAI_EditorUtility.centeredBoldLabel);
-                if (GUILayout.Button("", "OL Plus", GUILayout.Width(20)))
+                if (list.FindPropertyRelative("Array.size").hasMultipleDifferentValues == false)
                 {
-                    addingCondition = true;
-                }
-                EditorGUILayout.EndHorizontal();
-            }
-            else
-            {
-                EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-
-                EditorGUILayout.LabelField("New Condition ", MAI_EditorUtility.centeredBoldLabel);
-                GUILayout.Box("", MAI_EditorUtility.thickHorizontalLine);
-
-                // Begin variable settings.
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField(new GUIContent("Score:", "The influence of the condition toward the AI's motivation of acting on the behaviour."), GUILayout.MaxWidth(70));
-                newConditionValue = EditorGUILayout.IntSlider(newConditionValue, 1, 999);
-                EditorGUILayout.EndHorizontal();
-                GUILayout.Box("", MAI_EditorUtility.thickHorizontalLine);
-                newConditionState = EditorGUILayout.Toggle(new GUIContent("State: [" + newConditionState.ToString() + "]", "The required state for the condition's score to count."), newConditionState);
-
-                GUILayout.Box("", MAI_EditorUtility.thickHorizontalLine);
-
-                selectedModule = MAI_EditorUtility.DrawCompactPopup("Module:", selectedModule, moduleNames);
-                selectedCondition = MAI_EditorUtility.DrawCompactPopup("Conditions:", selectedCondition, self.modules[selectedModule].conditions);
-
-                GUILayout.Box("", MAI_EditorUtility.thickHorizontalLine);
-
-                EditorGUILayout.BeginHorizontal();
-                if (GUILayout.Button("Add Condition", EditorStyles.miniButton))
-                {
-                    if(self.modules[selectedModule].conditions.Length > 0)
+                    EditorGUILayout.BeginVertical("box");
+                    if (list.arraySize > 0)
                     {
-                        behaviour.conditions.Add(new BehaviourEvent(self.modules[selectedModule].conditions[selectedCondition], newConditionValue, self.modules[selectedModule], selectedCondition, newConditionState));
-                        //TODO: Mark current scene scene dirty? EditorSceneManager.MarkSceneDirty();
-                        addingCondition = false;
-                    }
-                    else 
-                    { 
-                        EditorApplication.Beep();
-                    }
-                }
-                if (GUILayout.Button("Cancel", EditorStyles.miniButton))
-                {
-                    addingCondition = false;
-                }
-                EditorGUILayout.EndHorizontal();
-
-                EditorGUILayout.EndVertical();
-            }
-        }
-
-        public void DrawActionListGUI(AIAgent self, int page)
-        {
-            showActions = MAI_EditorUtility.DrawFoldout(showActions, "Actions:");
-            if (showActions)
-            {
-                // Collapse open foldouts:
-                if (showConditions == true || showEvents == true || showBehaviourHelp == true)
-                {
-                    showConditions = false;
-                    showEvents = false;
-                    showBehaviourHelp = false;
-                }
-
-                // Draw Actions:
-                EditorGUILayout.BeginVertical("box");
-                if (self.behaviours[page].actions != null && self.behaviours[page].actions.Count > 0)
-                {
-                    GUILayout.Box("", MAI_EditorUtility.thickHorizontalLine);
-                    for (int i = self.behaviours[page].actions.Count - 1; i >= 0; i--)
-                    {
-                        if (self.behaviours[page].actions[i].instance != null)
+                        for (int i = list.arraySize - 1; i >= 0; i--)
                         {
-                            EditorGUILayout.BeginHorizontal();
+                            SerializedProperty element = list.GetArrayElementAtIndex(i);
+                            GUILayout.Box("", MAI_EditorUtility.thickHorizontalLine);
+                            if (element.FindPropertyRelative("instance").objectReferenceValue != null)
+                            {
+                                EditorGUILayout.BeginHorizontal();
 
-                            EditorGUILayout.LabelField((self.behaviours[page].actions.Count - i).ToString(), MAI_EditorUtility.centeredMiniLabel, GUILayout.Width(20), GUILayout.ExpandWidth(false));
-                            if (self.behaviours[page].actions.Count > 1)
-                            {
-                                int oldIndex = i;
-                                BehaviourEvent oldAction = self.behaviours[page].actions[i];
-                                if(i == self.behaviours[page].actions.Count - 1)
+                                if (element.FindPropertyRelative("isCondition").boolValue == true)
                                 {
-                                    if (GUILayout.Button("↓", EditorStyles.miniButtonLeft, GUILayout.Width(50)))
+                                    //Draw condition:
+                                    EditorGUILayout.BeginVertical(EditorStyles.miniButtonLeft, GUILayout.Width(20));
+                                    element.FindPropertyRelative("score").intValue = Mathf.Clamp(EditorGUILayout.IntField(element.FindPropertyRelative("score").intValue, MAI_EditorUtility.centeredMiniLabel, GUILayout.Width(20)), 1, 999);
+                                    EditorGUILayout.EndVertical();
+                                    EditorGUILayout.BeginVertical(EditorStyles.miniButtonMid);
+                                    GUILayout.Label(element.FindPropertyRelative("name").stringValue, MAI_EditorUtility.centeredMiniLabel);
+                                    EditorGUILayout.EndVertical();
+                                    EditorGUILayout.BeginVertical(EditorStyles.miniButtonRight, GUILayout.Width(30));
+                                    SerializedProperty state = element.FindPropertyRelative("state");
+                                    if (GUILayout.Button(state.boolValue.ToString(), MAI_EditorUtility.centeredMiniLabel))
                                     {
-                                        // Move action down.
-                                        self.behaviours[page].actions.Remove(self.behaviours[page].actions[oldIndex]);
-                                        self.behaviours[page].actions.Insert(oldIndex - 1, oldAction);
+                                        state.boolValue = !state.boolValue;
                                     }
+                                    EditorGUILayout.EndVertical();
                                 }
-                                else if(i == 0)
+                                else
                                 {
-                                    if (GUILayout.Button("↑", EditorStyles.miniButtonLeft, GUILayout.Width(50)))
+                                    //Draw action:
+                                    EditorGUILayout.BeginHorizontal();
+
+                                    EditorGUILayout.LabelField((list.arraySize - i).ToString(), MAI_EditorUtility.centeredMiniLabel, GUILayout.Width(20), GUILayout.ExpandWidth(false));
+                                    if (list.arraySize > 1)
                                     {
-                                        // Move action up.
-                                        self.behaviours[page].actions.Remove(self.behaviours[page].actions[oldIndex]);
-                                        self.behaviours[page].actions.Insert(oldIndex + 1, oldAction);
+                                        int oldIndex = i;
+                                        if (i == list.arraySize - 1)
+                                        {
+                                            if (GUILayout.Button("↓", EditorStyles.miniButtonLeft, GUILayout.Width(50)))
+                                            {
+                                                // Move action down.
+                                                list.MoveArrayElement(i, oldIndex - 1);
+                                            }
+                                        }
+                                        else if (i == 0)
+                                        {
+                                            if (GUILayout.Button("↑", EditorStyles.miniButtonLeft, GUILayout.Width(50)))
+                                            {
+                                                // Move action up.
+                                                list.MoveArrayElement(i, oldIndex + 1);
+                                            }
+                                        }
+                                        else if (i > 0 && i < list.arraySize)
+                                        {
+                                            if (GUILayout.Button("↓", EditorStyles.miniButtonLeft, GUILayout.Width(25)))
+                                            {
+                                                // Move action down.
+                                                list.MoveArrayElement(i, oldIndex - 1);
+                                            }
+                                            if (GUILayout.Button("↑", EditorStyles.miniButtonMid, GUILayout.Width(25)))
+                                            {
+                                                // Move action up.
+                                                list.MoveArrayElement(i, oldIndex + 1);
+                                            }
+                                        }
                                     }
+                                    if (list.arraySize == 1)
+                                    {
+                                        EditorGUILayout.BeginHorizontal(EditorStyles.miniButton);
+                                    }
+                                    else
+                                    {
+                                        EditorGUILayout.BeginHorizontal(EditorStyles.miniButtonRight);
+                                    }
+                                    EditorGUILayout.LabelField(element.FindPropertyRelative("name").stringValue, MAI_EditorUtility.upperLeftMiniLabel, GUILayout.MaxWidth(120));
+                                    EditorGUILayout.EndHorizontal();
+                                    EditorGUILayout.EndHorizontal();
                                 }
-                                else if(i > 0 && i < self.behaviours[page].actions.Count)
+
+                                if (GUILayout.Button("", "OL Minus", GUILayout.Width(25)))
                                 {
-                                    if (GUILayout.Button("↓", EditorStyles.miniButtonLeft, GUILayout.Width(25)))
-                                    {
-                                        // Move action down.
-                                        self.behaviours[page].actions.Remove(self.behaviours[page].actions[oldIndex]);
-                                        self.behaviours[page].actions.Insert(oldIndex - 1, oldAction);
-                                    }
-                                    if (GUILayout.Button("↑", EditorStyles.miniButtonMid, GUILayout.Width(25)))
-                                    {
-                                        // Move action up.
-                                        self.behaviours[page].actions.Remove(self.behaviours[page].actions[oldIndex]);
-                                        self.behaviours[page].actions.Insert(oldIndex + 1, oldAction);
-                                    }
+                                    list.DeleteArrayElementAtIndex(i);
                                 }
-                            }
-                            if(self.behaviours[page].actions.Count == 1)
-                            {
-                                EditorGUILayout.BeginHorizontal(EditorStyles.miniButton);
+                                EditorGUILayout.EndHorizontal();
                             }
                             else
                             {
-                                EditorGUILayout.BeginHorizontal(EditorStyles.miniButtonRight);
-                            }
-                            EditorGUILayout.LabelField(self.behaviours[page].actions[i].name, MAI_EditorUtility.upperLeftMiniLabel, GUILayout.MaxWidth(120));
-                            EditorGUILayout.EndHorizontal();
-                            if (GUILayout.Button("", "OL Minus", GUILayout.Width(25)))
-                            {
-                                self.behaviours[page].actions.Remove(self.behaviours[page].actions[i]);
-                            }
+                                EditorGUILayout.HelpBox("Missing module for " + element.FindPropertyRelative("name").stringValue, MessageType.Warning);
+                                EditorGUILayout.LabelField("Class name changed? Update it below then attempt repair:");
+                                element.FindPropertyRelative("moduleName").stringValue = EditorGUILayout.TextField(element.FindPropertyRelative("moduleName").stringValue);
+                                EditorGUILayout.LabelField("OR");
+                                if (GUILayout.Button("Remove Condition", EditorStyles.miniButton))
+                                {
+                                    list.DeleteArrayElementAtIndex(i);
+                                }
 
-                            EditorGUILayout.EndHorizontal();
+                                self.hasBrokenReferences = true;
+                            }
                         }
-                        else
-                        {
-                            EditorGUILayout.HelpBox("Missing " + Type.GetType(self.behaviours[page].actions[i].moduleName).Name + " for " + self.behaviours[page].actions[i].name, MessageType.Warning);
-                            EditorGUILayout.LabelField("Class name changed? Update it below then attempt repair.");
-                            self.behaviours[page].actions[i].moduleName = EditorGUILayout.TextField(self.behaviours[page].actions[i].moduleName);
-                            EditorGUILayout.LabelField("OR");
-                            if(GUILayout.Button("Remove Action", EditorStyles.miniButton))
-                            {
-                                self.behaviours[page].actions.Remove(self.behaviours[page].actions[i]);
-                            }
-                            self.hasBrokenReferences = true;
-                        }
-
-
-                        GUILayout.Box("", MAI_EditorUtility.thickHorizontalLine);
                     }
+
+                    EditorGUILayout.Space();
+                    DrawEventCreationGUI(list, isCondition);
+
+
+                    EditorGUILayout.EndVertical();
                 }
-                DrawActionCreationGUI(self.behaviours[page]);
-                EditorGUILayout.EndVertical();
-            }
-            else
-            {
-                addingAction = false;
-            }
-        }
-
-        public void DrawActionCreationGUI(AIBehaviour behaviour)
-        {
-            if (addingAction == false)
-            {
-                EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
-                EditorGUILayout.LabelField("Add Action:", MAI_EditorUtility.centeredBoldLabel);
-                if (GUILayout.Button("", "OL Plus", GUILayout.Width(20)))
+                else
                 {
-                    addingAction = true;
-                }
-                EditorGUILayout.EndHorizontal();
-            }
-            else
-            {
-                EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-
-                EditorGUILayout.LabelField("New Action ", MAI_EditorUtility.centeredBoldLabel);
-
-                GUILayout.Box("", MAI_EditorUtility.thickHorizontalLine);
-                selectedModule = MAI_EditorUtility.DrawCompactPopup("Module:", selectedModule, moduleNames);
-                selectedAction = MAI_EditorUtility.DrawCompactPopup("Actions:", selectedAction, self.modules[selectedModule].actions);
-
-                GUILayout.Box("", MAI_EditorUtility.thickHorizontalLine);
-                if (behaviour.actions.Count > 1)
-                {
-                    EditorGUILayout.HelpBox("Note: actions are executed in the order they are arranged.", MessageType.None);
-                }
-                EditorGUILayout.BeginHorizontal();
-                if (GUILayout.Button("Add Action", EditorStyles.miniButton))
-                {
-                    if(self.modules[selectedModule].actions.Length > 0)
+                    if(isCondition == true)
                     {
-                        behaviour.actions.Insert(0, new BehaviourEvent(self.modules[selectedModule].actions[selectedAction], selectedAction, self.modules[selectedModule]));
-                        //TODO: Mark current scene scene dirty? EditorSceneManager.MarkSceneDirty();
-                        addingAction = false;
+                        EditorGUILayout.HelpBox("Multi-object editing Not supported. Make sure the selected AI Agents have an equal amount of conditions on the behaviour.", MessageType.None);
                     }
                     else
                     {
-                        EditorApplication.Beep();
+                        EditorGUILayout.HelpBox("Multi-object editing Not supported. Make sure the selected AI Agents have an equal amount of actions on the behaviour.", MessageType.None);
+                    }
+
+                }
+            }
+        }
+
+        public void DrawEventCreationGUI(SerializedProperty list, bool isCondition)
+        {
+            if (list != null)
+            {
+                if (isCondition == true)
+                {
+                    if (addingCondition == false)
+                    {
+                        EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
+                        EditorGUILayout.LabelField("Add Condition:", MAI_EditorUtility.centeredBoldLabel);
+                        if (GUILayout.Button("", "OL Plus", GUILayout.Width(20)))
+                        {
+                            addingCondition = true;
+                        }
+                        EditorGUILayout.EndHorizontal();
+                    }
+                    else
+                    {
+                        EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+
+                        EditorGUILayout.LabelField("New Condition ", MAI_EditorUtility.centeredBoldLabel);
+                        GUILayout.Box("", MAI_EditorUtility.thickHorizontalLine);
+
+                        // Begin variable settings.
+                        EditorGUILayout.BeginHorizontal();
+                        EditorGUILayout.LabelField(new GUIContent("Score:", "The influence of the condition toward the AI's motivation of acting on the behaviour."), GUILayout.MaxWidth(70));
+                        newConditionValue = EditorGUILayout.IntSlider(newConditionValue, 1, 999);
+                        EditorGUILayout.EndHorizontal();
+                        GUILayout.Box("", MAI_EditorUtility.thickHorizontalLine);
+                        newConditionState = EditorGUILayout.Toggle(new GUIContent("State: [" + newConditionState.ToString() + "]", "The required state for the condition's score to count."), newConditionState);
+
+                        GUILayout.Box("", MAI_EditorUtility.thickHorizontalLine);
+
+                        selectedModule = MAI_EditorUtility.DrawCompactPopup("Module:", selectedModule, moduleNames);
+                        selectedCondition = MAI_EditorUtility.DrawCompactPopup("Conditions:", selectedCondition, self.modules[selectedModule].conditions);
+
+                        GUILayout.Box("", MAI_EditorUtility.thickHorizontalLine);
+
+                        EditorGUILayout.BeginHorizontal();
+                        if (GUILayout.Button("Add Condition", EditorStyles.miniButton))
+                        {
+                            if (self.modules[selectedModule].conditions.Length > 0)
+                            {
+                                list.InsertArrayElementAtIndex(0);
+                                list.GetArrayElementAtIndex(0).FindPropertyRelative("name").stringValue = self.modules[selectedModule].conditions[selectedCondition];
+                                list.GetArrayElementAtIndex(0).FindPropertyRelative("id").intValue = selectedCondition;
+                                list.GetArrayElementAtIndex(0).FindPropertyRelative("instance").objectReferenceValue = self.modules[selectedModule];
+                                list.GetArrayElementAtIndex(0).FindPropertyRelative("moduleName").stringValue = self.modules[selectedModule].GetType().AssemblyQualifiedName;
+                                list.GetArrayElementAtIndex(0).FindPropertyRelative("score").intValue = newConditionValue;
+                                list.GetArrayElementAtIndex(0).FindPropertyRelative("isCondition").boolValue = true;
+                                list.GetArrayElementAtIndex(0).FindPropertyRelative("state").boolValue = newConditionState;
+                                addingCondition = false;
+                            }
+                            else
+                            {
+                                EditorApplication.Beep();
+                            }
+                        }
+                        if (GUILayout.Button("Cancel", EditorStyles.miniButton))
+                        {
+                            addingCondition = false;
+                        }
+                        EditorGUILayout.EndHorizontal();
+
+                        EditorGUILayout.EndVertical();
                     }
                 }
-                if (GUILayout.Button("Cancel", EditorStyles.miniButton))
+                else
                 {
-                    addingAction = false;
-                }
-                EditorGUILayout.EndHorizontal();
+                    if (addingAction == false)
+                    {
+                        EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
+                        EditorGUILayout.LabelField("Add Action:", MAI_EditorUtility.centeredBoldLabel);
+                        if (GUILayout.Button("", "OL Plus", GUILayout.Width(20)))
+                        {
+                            addingAction = true;
+                        }
+                        EditorGUILayout.EndHorizontal();
+                    }
+                    else
+                    {
+                        EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 
-                EditorGUILayout.EndVertical();
+                        EditorGUILayout.LabelField("New Action ", MAI_EditorUtility.centeredBoldLabel);
+
+                        GUILayout.Box("", MAI_EditorUtility.thickHorizontalLine);
+                        selectedModule = MAI_EditorUtility.DrawCompactPopup("Module:", selectedModule, moduleNames);
+                        selectedAction = MAI_EditorUtility.DrawCompactPopup("Actions:", selectedAction, self.modules[selectedModule].actions);
+
+
+                        GUILayout.Box("", MAI_EditorUtility.thickHorizontalLine);
+                        if (list.arraySize > 1)
+                        {
+                            EditorGUILayout.HelpBox("Note: actions are executed in the order they are arranged.", MessageType.None);
+                        }
+                        EditorGUILayout.BeginHorizontal();
+                        if (GUILayout.Button("Add Action", EditorStyles.miniButton))
+                        {
+                            if (self.modules[selectedModule].actions.Length > 0)
+                            {
+                                list.InsertArrayElementAtIndex(0);
+                                list.GetArrayElementAtIndex(0).FindPropertyRelative("name").stringValue = self.modules[selectedModule].actions[selectedAction];
+                                list.GetArrayElementAtIndex(0).FindPropertyRelative("id").intValue = selectedAction;
+                                list.GetArrayElementAtIndex(0).FindPropertyRelative("instance").objectReferenceValue = self.modules[selectedModule];
+                                list.GetArrayElementAtIndex(0).FindPropertyRelative("moduleName").stringValue = self.modules[selectedModule].GetType().AssemblyQualifiedName;
+                                addingAction = false;
+                            }
+                            else
+                            {
+                                EditorApplication.Beep();
+                            }
+                        }
+                        if (GUILayout.Button("Cancel", EditorStyles.miniButton))
+                        {
+                            addingAction = false;
+                        }
+                        EditorGUILayout.EndHorizontal();
+
+                        EditorGUILayout.EndVertical();
+                    }
+                }
             }
+            else
+            {
+                if (isCondition == true)
+                {
+                    EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
+                    EditorGUILayout.LabelField("Add Condition:", MAI_EditorUtility.centeredBoldLabel);
+                    if (GUILayout.Button("", "OL Plus", GUILayout.Width(20)))
+                    {
+                        // list.
+                        addingCondition = true;
+                    }
+                    EditorGUILayout.EndHorizontal();
+                }
+
+            }
+
         }
 
         public void DrawSettings()
@@ -739,6 +733,7 @@ namespace Kitbashery.AI
                 {
                     self.ValidateBehaviours();
                     self.FixBrokenReferences();
+                    self.hasBrokenReferences = false;
                 }
                 GUILayout.Box("", MAI_EditorUtility.thickHorizontalLine);
             }
