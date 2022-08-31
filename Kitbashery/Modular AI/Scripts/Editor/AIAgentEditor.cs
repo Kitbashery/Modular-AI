@@ -410,6 +410,20 @@ namespace Kitbashery.AI
             fold = MAI_EditorUtility.DrawFoldout(fold, label);
             if (fold == true)
             {
+                // Collapse open foldouts:
+                if (showActions == true || showConditions == true)
+                {
+                    if(isCondition == true)
+                    {
+                        showActions = false;
+                    }
+                    else
+                    {
+                        showConditions = false;
+                    }
+                    showEvents = false;
+                }
+                
                 if (list.FindPropertyRelative("Array.size").hasMultipleDifferentValues == false)
                 {
                     EditorGUILayout.BeginVertical("box");
