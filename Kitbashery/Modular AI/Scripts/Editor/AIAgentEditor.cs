@@ -66,8 +66,6 @@ namespace Kitbashery.AI
 
         private int pagination = 1;
 
-        private AIBehaviour copied;
-
         private bool renaming = false;
 
         private bool needsRefresh = false;
@@ -292,6 +290,23 @@ namespace Kitbashery.AI
                 behaviours.GetArrayElementAtIndex(behaviours.arraySize - 1).FindPropertyRelative("conditions").ClearArray();
                 pagination = behaviours.arraySize;
             }
+            /*
+             * Duplicate behaviour button (commented out since elements weren't moving as expected).
+             * (If re-enabled be sure to change the add behaviour button's style to miniButtonMid).
+            if (GUILayout.Button(EditorGUIUtility.IconContent("d_winbtn_win_restore", "Duplicate Behaviour"), EditorStyles.miniButtonRight, GUILayout.Width(20)))
+            {
+                int originalIndex = pagination - 1;
+                //Move the current behaviour to the end:
+                behaviours.GetArrayElementAtIndex(originalIndex).MoveArrayElement(originalIndex, behaviours.arraySize);
+                //Insert new at the end (will copy what is currently at the end).
+                behaviours.InsertArrayElementAtIndex(behaviours.arraySize);
+                //Move the original back to where it was in the array.
+                behaviours.GetArrayElementAtIndex(behaviours.arraySize - 1).MoveArrayElement(behaviours.arraySize - 1, originalIndex + 1);
+                //Change the name of the duplicated behaviour (it should be at the end).
+                behaviours.GetArrayElementAtIndex(behaviours.arraySize - 1).FindPropertyRelative("name").stringValue = behaviours.GetArrayElementAtIndex(behaviours.arraySize -1).FindPropertyRelative("name").stringValue + " (copy)";
+                pagination = behaviours.arraySize;
+            }
+            */
             if (pagination > behaviours.arraySize)
             {
                 pagination = behaviours.arraySize;
@@ -304,6 +319,7 @@ namespace Kitbashery.AI
             {
                 addingAction = false;
                 addingCondition = false;
+                renaming = false;
             }
             EditorGUILayout.Space();
             if (GUILayout.Button(EditorGUIUtility.IconContent("d_UnityEditor.InspectorWindow"), GUIStyle.none, GUILayout.Width(20))) { showBehaviourHelp = !showBehaviourHelp; }
@@ -350,11 +366,10 @@ namespace Kitbashery.AI
             else
             {
                 EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
-                if (renaming == false && GUILayout.Button(behaviour.FindPropertyRelative("name").stringValue, MAI_EditorUtility.centeredLabel, GUILayout.ExpandWidth(true)))
+                if (renaming == false && GUILayout.Button(new GUIContent(behaviour.FindPropertyRelative("name").stringValue, "Click to rename."), MAI_EditorUtility.centeredLabel, GUILayout.ExpandWidth(true)))
                 {
                     renaming = true;
                 }
-                //EditorGUILayout.LabelField(behaviour.FindPropertyRelative("name").stringValue, MAI_EditorUtility.centeredLabel, GUILayout.ExpandWidth(true));
                 if (behaviours.arraySize > 1)
                 {
                     if (GUILayout.Button(new GUIContent("", "Remove Behaviour"), "OL Minus", GUILayout.Width(20)))
@@ -367,33 +382,6 @@ namespace Kitbashery.AI
                     }
                 }
                 EditorGUILayout.EndHorizontal();
-
-                /*
-                GUILayout.Box("", MAI_EditorUtility.horizontalLine);
-
-                EditorGUILayout.BeginHorizontal();
-                if (renaming == false && GUILayout.Button("Rename", EditorStyles.miniButtonLeft))
-                {
-                    renaming = true;
-                }
-                if (GUILayout.Button("Copy", EditorStyles.miniButtonMid))
-                {
-                    copied = new AIBehaviour(self.behaviours[pagination - 1].name + " (Copy)", self.behaviours[pagination - 1].conditions, self.behaviours[pagination - 1].actions);
-                }
-                if (GUILayout.Button("Paste", EditorStyles.miniButtonMid))
-                {
-                    if (copied != null)
-                    {
-                        self.behaviours[pagination - 1] = new AIBehaviour(copied.name, copied.conditions, copied.actions);
-                    }
-                }
-                if (GUILayout.Button("Duplicate", EditorStyles.miniButtonRight))
-                {
-                    self.behaviours.Add(new AIBehaviour(self.behaviours[pagination - 1].name + " (Copy)", self.behaviours[pagination - 1].conditions, self.behaviours[pagination - 1].actions));
-                    pagination = self.behaviours.Count;
-                }
-                EditorGUILayout.EndHorizontal();
-                */
             }
 
             GUILayout.Box("", MAI_EditorUtility.horizontalLine);
@@ -425,7 +413,7 @@ namespace Kitbashery.AI
                     }
                     showEvents = false;
                 }
-                
+
                 if (list.FindPropertyRelative("Array.size").hasMultipleDifferentValues == false)
                 {
                     EditorGUILayout.BeginVertical("box");
@@ -681,7 +669,6 @@ namespace Kitbashery.AI
                     EditorGUILayout.LabelField("Add Condition:", MAI_EditorUtility.centeredBoldLabel);
                     if (GUILayout.Button("", "OL Plus", GUILayout.Width(20)))
                     {
-                        // list.
                         addingCondition = true;
                     }
                     EditorGUILayout.EndHorizontal();
