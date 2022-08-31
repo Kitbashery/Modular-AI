@@ -288,6 +288,8 @@ namespace Kitbashery.AI
             {
                 behaviours.InsertArrayElementAtIndex(behaviours.arraySize);
                 behaviours.GetArrayElementAtIndex(behaviours.arraySize - 1).FindPropertyRelative("name").stringValue = "New Behaviour " + (behaviours.arraySize);
+                behaviours.GetArrayElementAtIndex(behaviours.arraySize - 1).FindPropertyRelative("actions").ClearArray();
+                behaviours.GetArrayElementAtIndex(behaviours.arraySize - 1).FindPropertyRelative("conditions").ClearArray();
                 pagination = behaviours.arraySize;
             }
             if (pagination > behaviours.arraySize)
