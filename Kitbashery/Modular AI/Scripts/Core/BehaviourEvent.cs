@@ -82,11 +82,6 @@ namespace Kitbashery.AI
         /// <summary>
         /// Constructs an event as a condition.
         /// </summary>
-        /// <param name="eventName"></param>
-        /// <param name="eventID"></param>
-        /// <param name="module"></param>
-        /// <param name="conditionScore"></param>
-        /// <param name="conditionState"></param>
         public BehaviourEvent(string eventName, int eventID, AIModule module, int conditionScore, bool conditionState)
         {
             instance = module;
@@ -109,9 +104,6 @@ namespace Kitbashery.AI
         /// <summary>
         /// Constructs an event as an action.
         /// </summary>
-        /// <param name="eventName"></param>
-        /// <param name="eventID"></param>
-        /// <param name="module"></param>
         public BehaviourEvent(string eventName, int eventID, AIModule module)
         {
             instance = module;

@@ -41,7 +41,7 @@ namespace Kitbashery.AI
     [DisallowMultipleComponent]
     public class MemoryModule : AIModule
     {
-        #region Variables:
+        #region Properties:
 
         public UnityEvent memoryEvents;
 
@@ -325,7 +325,7 @@ namespace Kitbashery.AI
 
         #endregion
 
-        #region Core Functions:
+        #region Methods:
 
         public void FocusOnGameObject(FocusModes focusMode)
         {
@@ -591,7 +591,7 @@ namespace Kitbashery.AI
         }
 
         /// <summary>
-        /// Finds all <see cref="MAI_Agent"/>s in <see cref="objects"/> and moves them to <see cref="agents"/>.
+        /// Finds all <see cref="AIAgent"/>s in <see cref="objects"/> and moves them to <see cref="agents"/>.
         /// </summary>
         public void FindAgentsInEnvironmentMemory()
         {

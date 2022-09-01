@@ -264,11 +264,11 @@ namespace Kitbashery.AI
             // Not having a MAI_MemoryModule assigned will cause this script to needlessly impact performance and potentially break gameplay; throw error:
             if (memory == null)
             {
-                Debug.LogError("|MAI|: MAI_SensorModule on " + gameObject + " does not have a MAI_MemoryModule assigned, this agent will not remember what it scans!");
+                Debug.LogErrorFormat(gameObject, "|Modular AI|: SensorModule does not have a MemoryModule assigned, this agent will not remember what it scans!");
             }
             else if(memory.transform != transform && clearOldMemory == true)
             {
-                Debug.LogWarning("|MAI|: MAI_SensorModule on " + gameObject + " has clearOldMemory set to 'True' but the variable 'memory' is assigned to a diffrent MAI_Agent. This could lead to unintended gameplay concequences.");
+                Debug.LogWarningFormat(gameObject, "|Modular AI|: SensorModule has clearOldMemory set to 'True' but the variable 'memory' is assigned to a diffrent AIAgent. This could lead to unintended gameplay concequences.");
             }
 
             if(eyes == null)
@@ -484,7 +484,7 @@ namespace Kitbashery.AI
                     }
                     else
                     {
-                        Debug.LogWarningFormat(gameObject, "|MAI|: SensorModule tried to do a filtered scan of the environment but the search filter was empty!");
+                        Debug.LogWarningFormat(gameObject, "|Modular AI|: SensorModule tried to do a filtered scan of the environment but the search filter was empty!");
                     }
 
                     break;

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -86,7 +86,7 @@ namespace Kitbashery.AI
             scoreType = serializedObject.FindProperty("scoreType");
             scoreThreshold = serializedObject.FindProperty("scoreThreshold");
 
-            RefreshModules((AIAgent)target);
+            RefreshModules();
         }
 
         public override void OnInspectorGUI()
@@ -107,7 +107,7 @@ namespace Kitbashery.AI
             // Refresh modules if needed.
             if (needsRefresh == true)
             {
-                RefreshModules(self);
+                RefreshModules();
                 needsRefresh = false;
             }
 
@@ -123,7 +123,7 @@ namespace Kitbashery.AI
                             self.hasBrokenReferences = true;
                         }
                     }
-                    DrawBrokenReferenceNotice(self);
+                    DrawBrokenReferenceNotice();
                 }
 
                 if (self.hasBrokenReferences == false)
@@ -133,17 +133,17 @@ namespace Kitbashery.AI
             }
             else
             {
-                DrawModules(self);
+                DrawModules();
                 EditorGUILayout.Space();
 
                 // Draw behaviours:
                 if (self.behaviours.Count > 0)
                 {
                     EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-                    DrawPagination(self);
-                    DrawBehaviourOptions(self, behaviours.GetArrayElementAtIndex(pagination - 1));
+                    DrawPagination();
+                    DrawBehaviourOptions( behaviours.GetArrayElementAtIndex(pagination - 1));
                     EditorGUILayout.Space();
-                    DrawBehaviourList(behaviours, pagination - 1);
+                    DrawBehaviourList( behaviours, pagination - 1);
                     EditorGUILayout.Space();
                     EditorGUILayout.EndVertical();
                 }
@@ -167,11 +167,14 @@ namespace Kitbashery.AI
 
         #region Methods:
 
-        public void RefreshModules(AIAgent self)
+        public void RefreshModules()
         {
+            addingCondition = false;
+            addingAction = false;
             selectedModule = 0;
             selectedAction = 0;
             selectedCondition = 0;
+            self = (AIAgent)target;
             self.modules = self.gameObject.GetComponents<AIModule>();
             moduleNames = new string[self.modules.Length];
             for (int i = 0; i < self.modules.Length; i++)
@@ -180,19 +183,19 @@ namespace Kitbashery.AI
             }
         }
 
-        public void DrawModules(AIAgent self)
+        public void DrawModules()
         {
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-            //EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Modules:", MAI_EditorUtility.lowerLeftBoldLabel);
-            //DrawModuleRefreshButton(self);
-            //EditorGUILayout.EndHorizontal();
+            DrawModuleRefreshButton();
+            EditorGUILayout.EndHorizontal();
             GUILayout.Box("", MAI_EditorUtility.thickHorizontalLine);
             for (int m = self.modules.Length - 1; m >= 0; m--)
             {
                 if (self.modules[m] == null)
                 {
-                    RefreshModules(self);
+                    RefreshModules();
                 }
                 self.modules[m].hideFlags = HideFlags.None;
                 EditorGUILayout.BeginHorizontal();
@@ -212,7 +215,7 @@ namespace Kitbashery.AI
                     if (GUILayout.Button("!! Remove Module !!", EditorStyles.miniButton))
                     {
                         DestroyImmediate(self.modules[m]);
-                        RefreshModules(self);
+                        RefreshModules();
                         break;
                     }
                     if (GUILayout.Button("CANCEL", EditorStyles.miniButton))
@@ -255,18 +258,18 @@ namespace Kitbashery.AI
             EditorGUILayout.EndVertical();
         }
 
-        public void DrawModuleRefreshButton(AIAgent self)
+        public void DrawModuleRefreshButton()
         {
-            GUIContent content = EditorGUIUtility.IconContent("Refresh");
+            /*GUIContent content = EditorGUIUtility.IconContent("Refresh");
             content.tooltip = "Refesh Modules";
             if (GUILayout.Button(content, EditorStyles.helpBox, GUILayout.Width(24), GUILayout.Height(24)))
             {
-                RefreshModules(self);
+                RefreshModules();
                 Debug.Log("|MAI|: Modules refreshed.");
-            }
+            }*/
         }
 
-        public void DrawPagination(AIAgent self)
+        public void DrawPagination()
         {
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Behaviours:", MAI_EditorUtility.clippingBoldLabel, GUILayout.Width(65));
@@ -350,7 +353,7 @@ namespace Kitbashery.AI
             }
         }
 
-        public void DrawBehaviourOptions(AIAgent self, SerializedProperty behaviour)
+        public void DrawBehaviourOptions(SerializedProperty behaviour)
         {
             GUILayout.Box("", MAI_EditorUtility.thickHorizontalLine);
             if (renaming == true)
@@ -385,7 +388,7 @@ namespace Kitbashery.AI
             }
 
             GUILayout.Box("", MAI_EditorUtility.horizontalLine);
-            DrawBrokenReferenceNotice(self);
+            DrawBrokenReferenceNotice();
         }
 
         public void DrawBehaviourList(SerializedProperty list, int page)
@@ -697,7 +700,6 @@ namespace Kitbashery.AI
             }
             GUILayout.Box("", MAI_EditorUtility.horizontalLine);
             EditorGUILayout.Space();
-
             showEvents = MAI_EditorUtility.DrawFoldout(showEvents, "Events:");
             if (showEvents)
             {
@@ -725,23 +727,28 @@ namespace Kitbashery.AI
             EditorGUILayout.EndVertical();
         }
 
-        private void DrawBrokenReferenceNotice(AIAgent self)
+        private void DrawBrokenReferenceNotice()
         {
             if (self.hasBrokenReferences == true)
             {
                 EditorGUILayout.Space();
                 GUILayout.Box("", MAI_EditorUtility.thickHorizontalLine);
                 EditorGUILayout.HelpBox("Broken logic detected! A missing module could impact gameplay!", MessageType.Error);
+                EditorGUILayout.BeginHorizontal();
                 if (GUILayout.Button("Attempt Repair"))
                 {
                     self.ValidateBehaviours();
                     self.FixBrokenReferences();
                     self.hasBrokenReferences = false;
                 }
+                if (GUILayout.Button("Dismiss"))
+                {
+                    self.hasBrokenReferences = false;
+                }
+                EditorGUILayout.EndHorizontal();
                 GUILayout.Box("", MAI_EditorUtility.thickHorizontalLine);
             }
         }
-
         #endregion
     }
 }

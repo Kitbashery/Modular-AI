@@ -119,6 +119,9 @@ namespace Kitbashery.AI
                 AIManager.Instance = new GameObject("AI Manager").AddComponent<AIManager>();
                 Debug.LogWarning("AIManager instance not found, creating one...");
             }
+
+            //Debug messages impact performance in builds, make sure this is off by default. If you're in the editor just switch it on when you need it.
+            debugMode = false;
         }
 
         void OnEnable()
@@ -265,7 +268,7 @@ namespace Kitbashery.AI
 
                             if (debugMode == true && (debugLevel == DebugLevels.All || debugLevel == DebugLevels.ConditionsOnly))
                             {
-                                Debug.Log("|MAI|: Condition in behaviour: '" + behaviours[b].name + "' on agent '" + gameObject.name + "' met its state and scored '" + behaviours[b].conditions[c].score + "' total score is now " + score + ".");
+                                Debug.LogFormat(gameObject, "|Modular AI|: Condition in behaviour: '{0}'  met its state and scored '{1}' total score is now {2}. ", behaviours[b].name, behaviours[b].conditions[c].score, score);
                             }
 
                             if (scoreType == ScoreTypes.FirstScoreWins)
@@ -274,7 +277,7 @@ namespace Kitbashery.AI
                                 {
                                     if (debugMode == true && (debugLevel == DebugLevels.All || debugLevel == DebugLevels.BehavioursOnly))
                                     {
-                                        Debug.Log("|MAI|: First behaviour on agent: '" + gameObject.name + "' to score is: '" + behaviours[b].name + "' This behaviour will win. | Score = " + score);
+                                        Debug.LogFormat(gameObject, "|Modular AI|: First behaviour to score above the threshold is: '{0}' This behaviour will win. | Score = {1}", behaviours[b].name, score);
                                     }
                                     winningBehaviours.Add(behaviours[b]);
                                     break;
@@ -286,7 +289,7 @@ namespace Kitbashery.AI
                                 {
                                     if (debugMode == true && (debugLevel == DebugLevels.All || debugLevel == DebugLevels.BehavioursOnly))
                                     {
-                                        Debug.Log("|MAI|: First behaviour on agent: '" + gameObject.name + "' to score above the threshold is: '" + behaviours[b].name + "' This behaviour will win. | Score = " + score);
+                                        Debug.LogFormat(gameObject, "|Modular AI|: First behaviour to score above the threshold is: '{0}' This behaviour will win. | Score = {1}", behaviours[b].name, score);
                                     }
                                     winningBehaviours.Add(behaviours[b]);
                                     break;
@@ -296,7 +299,7 @@ namespace Kitbashery.AI
                     }
                     else
                     {
-                        Debug.LogWarning("|MAI|: Tried to check " + behaviours[b].conditions[c] + @"" + behaviours[b].conditions[c].name + @"" + " on " + gameObject.name + " but a module was missing; ignoring condition.");
+                        Debug.LogWarningFormat(gameObject, "|Modular AI|: Tried to check " + behaviours[b].conditions[c] + @"" + behaviours[b].conditions[c].name + @"" + " but a module was missing; ignoring condition.");
                     }
                 }
 
@@ -308,7 +311,7 @@ namespace Kitbashery.AI
                         {
                             if (debugMode == true && (debugLevel == DebugLevels.All || debugLevel == DebugLevels.BehavioursOnly))
                             {
-                                Debug.Log("|MAI|: Behaviour '" + behaviours[b].name + "' on agent: " + gameObject.name + " scored above the threshold and will have it's actions executed. Score = " + score);
+                                Debug.LogFormat(gameObject, "|Modular AI|: Behaviour '{0}' scored above the threshold and will have it's actions executed. Score = {1}", behaviours[b].name, score);
                             }
                             winningBehaviours.Add(behaviours[b]);
                         }
@@ -321,7 +324,7 @@ namespace Kitbashery.AI
                         {
                             if (debugMode == true && (debugLevel == DebugLevels.All || debugLevel == DebugLevels.BehavioursOnly))
                             {
-                                Debug.Log("|MAI|: Behaviour '" + behaviours[b].name + "' on agent: " + gameObject.name + " scored above the current highest score and is now the new winner. Score = " + score);
+                                Debug.LogFormat(gameObject, "|Modular AI|: Behaviour '{0}' scored above the current highest score and is now the new winner. Score = {1}", behaviours[b].name, score);
                             }
                             scoreToBeat = score;
                             winningBehaviours.Clear();
@@ -336,7 +339,7 @@ namespace Kitbashery.AI
                         {
                             if (debugMode == true && (debugLevel == DebugLevels.All || debugLevel == DebugLevels.BehavioursOnly))
                             {
-                                Debug.Log("|MAI|: Behaviour: '" + behaviours[b].name + "' on agent: " + gameObject.name + " scored below the current lowest score and is now the new winner. Score = " + score);
+                                Debug.LogFormat(gameObject, "|Modular AI|: Behaviour '{0}' scored below the current lowest score and is now the new winner. Score = {1}", behaviours[b].name, score);
                             }
                             scoreToBeat = score;
                             winningBehaviours.Clear();

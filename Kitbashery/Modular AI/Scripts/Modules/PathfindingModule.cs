@@ -42,7 +42,7 @@ namespace Kitbashery.AI
     [RequireComponent(typeof(NavMeshAgent))]
     public class PathfindingModule : AIModule
     {
-        #region Variables:
+        #region Properties:
 
         /// <summary>
         /// Toggles debug mode for displaying gizmos when the agent is selected.
@@ -218,7 +218,7 @@ namespace Kitbashery.AI
             {
                 if (_actions == null || _actions.Length == 0)
                 {
-                    _actions = new string[11] { "flee", "follow target", "idle", "move to target", "patrol", "stop patrol", "wander", "go to previous location", "path target = focus object", "path target = focus agent", "path target = focus player" };
+                    _actions = new string[12] { "flee", "follow target", "idle", "move to target", "patrol", "stop patrol", "wander", "go to previous location", "path target = focus object", "path target = focus agent", "path target = focus player", "path target = nothing"};
                 }
                 return _actions;
             }
@@ -327,6 +327,12 @@ namespace Kitbashery.AI
                     }
 
                     break;
+
+                case 11:
+
+                    target = null;
+
+                    break;
             }
         }
 
@@ -361,7 +367,7 @@ namespace Kitbashery.AI
 
         #endregion
 
-        #region Core Functions:
+        #region Methods:
 
         public void Flee()
         {

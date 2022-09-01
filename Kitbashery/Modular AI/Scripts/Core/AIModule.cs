@@ -41,7 +41,7 @@ namespace Kitbashery.AI
     [AddComponentMenu("Kitbashery/AI/Modules/MAI_Module.cs")]
     public abstract class AIModule : MonoBehaviour
     {
-        #region Variables:
+        #region Properties:
 
         public abstract string[] conditions { get; }
         public abstract string[] actions { get; }

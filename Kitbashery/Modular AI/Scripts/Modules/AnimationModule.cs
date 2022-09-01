@@ -39,7 +39,7 @@ namespace Kitbashery.AI
     [RequireComponent(typeof(Animator))]
     public class AnimationModule : AIModule
     {
-        #region Variables:
+        #region Properties:
 
         public UnityEvent animationEvents;
 
@@ -237,7 +237,7 @@ namespace Kitbashery.AI
 
         #endregion
 
-        #region Core Functions:
+        #region Methods:
 
         public void Idle()
         {

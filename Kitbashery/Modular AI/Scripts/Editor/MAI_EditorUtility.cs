@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 using UnityEditorInternal;
+using System;
 
 namespace Kitbashery.AI
 {
@@ -47,14 +48,6 @@ namespace Kitbashery.AI
             return toggle;
         }
 
-        public static int DrawCompactPopup(string label, int value, string[] options)
-        {
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(label, GUILayout.Width(75));
-            value = EditorGUILayout.Popup(value, options);
-            EditorGUILayout.EndHorizontal();
-            return value;
-        }
         public static bool DrawFoldout(bool value, string label)
         {
             bool _value;
@@ -72,6 +65,16 @@ namespace Kitbashery.AI
             return _value;
         }
 
+        public static int DrawCompactPopup(string label, int value, string[] options)
+        {
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField(label, GUILayout.Width(75));
+            value = EditorGUILayout.Popup(value, options);
+            EditorGUILayout.EndHorizontal();
+            return value;
+        }
+
+
         public static void DrawComponentOptions(Component component)
         {
             if (GUILayout.Button(EditorGUIUtility.IconContent("_Menu"), EditorStyles.helpBox, GUILayout.Width(24), GUILayout.Height(24)))
@@ -84,6 +87,8 @@ namespace Kitbashery.AI
                 menu.AddItem(new GUIContent("Copy Component"), false, CopyComponentValues, component);
                 menu.AddSeparator("");
                 menu.AddItem(new GUIContent("Paste Component Values"), false, PasteComponentValues, component);
+                menu.AddSeparator("");
+                menu.AddItem(new GUIContent("Reset"), false, ResetComponentValues, component);
                 menu.ShowAsContext();
             }
         }
@@ -106,6 +111,15 @@ namespace Kitbashery.AI
         static void PasteComponentValues(object component)
         {
             ComponentUtility.PasteComponentValues((Component)component);
+        }
+
+        static void ResetComponentValues(object component)
+        {
+            Component c = (Component)component;
+            Type t = c.GetType();
+            GameObject go = c.gameObject;
+            GameObject.DestroyImmediate(c);
+            go.AddComponent(t);
         }
     }
 }
