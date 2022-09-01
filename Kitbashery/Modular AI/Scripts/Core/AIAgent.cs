@@ -48,6 +48,11 @@ namespace Kitbashery.AI
 
         private int componentCount = 0;
 
+        /// <summary>
+        /// Has the amount of modules changed?
+        /// </summary>
+        public bool modulesChanged = false;
+
         [SerializeField]
         public List<AIBehaviour> behaviours = new List<AIBehaviour>();
 
@@ -104,12 +109,7 @@ namespace Kitbashery.AI
 
         private void OnValidate()
         {
-            int components = GetComponents<Component>().Length;
-            if (components != componentCount)
-            {
-                ValidateBehaviours();
-                componentCount = components;
-            }
+            CheckForModuleChanges();
         }
 
         private void Awake()
@@ -145,84 +145,6 @@ namespace Kitbashery.AI
         #endregion
 
         #region Methods:
-
-        /// <summary>
-        /// Makes sure all components required by the behaviour logic has a component instance.
-        /// </summary>
-        public void ValidateBehaviours()
-        {
-            Dictionary<string, AIModule> currentModules = new Dictionary<string, AIModule>();
-            modules = GetComponents<AIModule>();
-            foreach (AIModule module in modules)
-            {
-                currentModules.Add(module.GetType().AssemblyQualifiedName, module);
-            }
-
-            if (currentModules.Count > 0)
-            {
-                foreach (AIBehaviour behaviour in behaviours)
-                {
-                    foreach (BehaviourEvent condition in behaviour.conditions)
-                    {
-                        if (condition.instance == null)
-                        {
-                            if (currentModules.ContainsKey(condition.moduleName) == false)
-                            {
-                                brokenEvents.Add(condition);
-                                hasBrokenReferences = true;
-                            }
-                            else
-                            {
-                                condition.instance = currentModules[condition.moduleName];
-                            }
-                        }
-                    }
-
-                    foreach (BehaviourEvent action in behaviour.actions)
-                    {
-                        if (action.instance == null)
-                        {
-                            if (currentModules.ContainsKey(action.moduleName) == false)
-                            {
-                                brokenEvents.Add(action);
-                                hasBrokenReferences = true;
-                            }
-                            else
-                            {
-                                action.instance = currentModules[action.moduleName];
-                            }
-                        }
-                    }
-                }
-            }     
-        }
-
-        public void FixBrokenReferences()
-        {
-            if(brokenEvents.Count > 0)
-            {
-                Dictionary<string, AIModule> modulesAdded = new Dictionary<string, AIModule>();
-                foreach (BehaviourEvent behaviourEvent in brokenEvents)
-                {
-                    if(modulesAdded.ContainsKey(behaviourEvent.moduleName) == false)
-                    {
-                        modulesAdded.Add(behaviourEvent.moduleName, (AIModule)gameObject.AddComponent(Type.GetType(behaviourEvent.moduleName)));
-                    }
-
-                    if(modulesAdded[behaviourEvent.moduleName] != null)
-                    {
-                        behaviourEvent.instance = modulesAdded[behaviourEvent.moduleName];
-                    }
-                    else
-                    {
-                        Debug.LogWarningFormat(gameObject, "|Modular AI|: Behaviour event ({0})'s referenced a class that has changed names or no longer exists; it will not function.", behaviourEvent.name);
-                    }
-
-                }
-                brokenEvents.Clear();
-                hasBrokenReferences = false;
-            }
-        }
 
         public void UpdateAI()
         {
@@ -385,6 +307,95 @@ namespace Kitbashery.AI
             else
             {
                 behaviours[behaviourIndex].actions.Add(behaviourEvent);
+            }
+        }
+
+        /// <summary>
+        /// Makes sure all components required by the behaviour logic has a component instance.
+        /// </summary>
+        public void ValidateBehaviours()
+        {
+            Dictionary<string, AIModule> currentModules = new Dictionary<string, AIModule>();
+            modules = GetComponents<AIModule>();
+            foreach (AIModule module in modules)
+            {
+                currentModules.Add(module.GetType().AssemblyQualifiedName, module);
+            }
+
+            if (currentModules.Count > 0)
+            {
+                foreach (AIBehaviour behaviour in behaviours)
+                {
+                    foreach (BehaviourEvent condition in behaviour.conditions)
+                    {
+                        if (condition.instance == null)
+                        {
+                            if (currentModules.ContainsKey(condition.moduleName) == false)
+                            {
+                                brokenEvents.Add(condition);
+                                hasBrokenReferences = true;
+                            }
+                            else
+                            {
+                                condition.instance = currentModules[condition.moduleName];
+                            }
+                        }
+                    }
+
+                    foreach (BehaviourEvent action in behaviour.actions)
+                    {
+                        if (action.instance == null)
+                        {
+                            if (currentModules.ContainsKey(action.moduleName) == false)
+                            {
+                                brokenEvents.Add(action);
+                                hasBrokenReferences = true;
+                            }
+                            else
+                            {
+                                action.instance = currentModules[action.moduleName];
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        public void FixBrokenReferences()
+        {
+            if (brokenEvents.Count > 0)
+            {
+                Dictionary<string, AIModule> modulesAdded = new Dictionary<string, AIModule>();
+                foreach (BehaviourEvent behaviourEvent in brokenEvents)
+                {
+                    if (modulesAdded.ContainsKey(behaviourEvent.moduleName) == false)
+                    {
+                        modulesAdded.Add(behaviourEvent.moduleName, (AIModule)gameObject.AddComponent(Type.GetType(behaviourEvent.moduleName)));
+                    }
+
+                    if (modulesAdded[behaviourEvent.moduleName] != null)
+                    {
+                        behaviourEvent.instance = modulesAdded[behaviourEvent.moduleName];
+                    }
+                    else
+                    {
+                        Debug.LogWarningFormat(gameObject, "|Modular AI|: Behaviour event ({0})'s referenced a class that has changed names or no longer exists; it will not function.", behaviourEvent.name);
+                    }
+
+                }
+                brokenEvents.Clear();
+                hasBrokenReferences = false;
+            }
+        }
+
+        public void CheckForModuleChanges()
+        {
+            int components = GetComponents<Component>().Length;
+            if (components != componentCount)
+            {
+                ValidateBehaviours();
+                componentCount = components;
+                modulesChanged = true;
             }
         }
 
