@@ -95,6 +95,7 @@ namespace Kitbashery.AI
             serializedObject.Update();
 
             // Refresh modules if needed.
+            self.CheckForModuleChanges();
             if (EditorApplication.isCompiling == true || self.modulesChanged == true)
             {
                 RefreshModules();
@@ -107,7 +108,7 @@ namespace Kitbashery.AI
                     // Check if there is behaviour logic but all the modules were removed:
                     foreach (AIBehaviour b in self.behaviours)
                     {
-                        if (b.actions.Count > 0 || b.conditions.Count > 0)
+                        if (b.actions.Count >= 1 || b.conditions.Count >= 1)
                         {
                             self.hasBrokenReferences = true;
                         }
@@ -163,16 +164,17 @@ namespace Kitbashery.AI
             selectedModule = 0;
             selectedAction = 0;
             selectedCondition = 0;
-            if (self != null)
+            if(self == null)
             {
-                self.modules = self.gameObject.GetComponents<AIModule>();
-                moduleNames = new string[self.modules.Length];
-                for (int i = 0; i < self.modules.Length; i++)
-                {
-                    moduleNames[i] = self.modules[i].GetType().Name;
-                }
-                self.modulesChanged = false;
+                self = (AIAgent)target;
             }
+            self.modules = self.gameObject.GetComponents<AIModule>();
+            moduleNames = new string[self.modules.Length];
+            for (int i = 0; i < self.modules.Length; i++)
+            {
+                moduleNames[i] = self.modules[i].GetType().Name;
+            }
+            self.modulesChanged = false;
         }
 
         public void DrawModules()
