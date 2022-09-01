@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -68,8 +68,6 @@ namespace Kitbashery.AI
 
         private bool renaming = false;
 
-        private bool needsRefresh = false;
-
         SerializedProperty behaviours, preActionExecution, postActionExecution, debugMode, debugLevel, scoreType, scoreThreshold;
 
         #endregion
@@ -96,19 +94,10 @@ namespace Kitbashery.AI
 
             serializedObject.Update();
 
-            // Check for script changes or component additions.
-            // Note: It is expensive to call GetComponents, but only one agent can be inspected at a time so it's not so bad.
-            if (EditorApplication.isCompiling == true || (self.GetComponents<AIModule>().Length > self.modules.Length))
-            {
-                // Note: Can't just call RefreshModules() here since it might not fully execute while the editor is compiling. (test this)?
-                needsRefresh = true;
-            }
-
             // Refresh modules if needed.
-            if (needsRefresh == true)
+            if (EditorApplication.isCompiling == true || self.modulesChanged == true)
             {
                 RefreshModules();
-                needsRefresh = false;
             }
 
             if (self.modules.Length == 0 || self.modules == null)
@@ -174,12 +163,15 @@ namespace Kitbashery.AI
             selectedModule = 0;
             selectedAction = 0;
             selectedCondition = 0;
-            self = (AIAgent)target;
-            self.modules = self.gameObject.GetComponents<AIModule>();
-            moduleNames = new string[self.modules.Length];
-            for (int i = 0; i < self.modules.Length; i++)
+            if (self != null)
             {
-                moduleNames[i] = self.modules[i].GetType().Name;
+                self.modules = self.gameObject.GetComponents<AIModule>();
+                moduleNames = new string[self.modules.Length];
+                for (int i = 0; i < self.modules.Length; i++)
+                {
+                    moduleNames[i] = self.modules[i].GetType().Name;
+                }
+                self.modulesChanged = false;
             }
         }
 
@@ -546,6 +538,11 @@ namespace Kitbashery.AI
         {
             if (list != null)
             {
+                if (self.modules.Length > 0 && moduleNames.Length == 0)
+                {
+                    RefreshModules();
+                }
+
                 if (isCondition == true)
                 {
                     if (addingCondition == false)
