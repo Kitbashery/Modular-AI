@@ -11,6 +11,8 @@ Modular AI is an inspector based visual behaviour designer.
 * Not tied to a specific pathfinding solution.
 * Fully extendable via code modules.
 
+![](https://kitbashery.com/assets/images/kitbashery-modular-ai-agent-component.jpg)
+
 ### Built-in Modules:
 
 #### Unity Pathfinding:
