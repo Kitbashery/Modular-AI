@@ -33,6 +33,9 @@ Need support or additional features? Please visit https://kitbashery.com/
 
 namespace Kitbashery.AI
 {
+    /// <summary>
+    /// This module contains actions and condtions to play animations via Unity's <see cref="Animator"/> component.
+    /// </summary>
     [HelpURL("https://kitbashery.com/docs/modular-ai/animation-module.html")]
     [DisallowMultipleComponent]
     [AddComponentMenu("Kitbashery/AI/AI Modules/Animation Module")]
@@ -63,8 +66,6 @@ namespace Kitbashery.AI
         public string[] hitReactionStates = new string[0];
         [HideInInspector]
         public int currentReactionState = -1;
-
-        public enum StateOptions { iteratively, randomly }
 
         #endregion
 
@@ -312,4 +313,6 @@ namespace Kitbashery.AI
 
         #endregion
     }
+
+    public enum StateOptions { iteratively, randomly }
 }

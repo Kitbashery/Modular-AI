@@ -69,8 +69,6 @@ namespace Kitbashery.AI
         /// </summary>
         private float currentDistance;
 
-        public enum FocusModes { Nearest, Farthest, Random, First, Last }
-
         #endregion
 
         #region Modular AI Condition Overrides:
@@ -637,4 +635,6 @@ namespace Kitbashery.AI
 
         #endregion
     }
+
+    public enum FocusModes { Nearest, Farthest, Random, First, Last }
 }

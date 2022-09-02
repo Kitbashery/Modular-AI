@@ -66,16 +66,8 @@ namespace Kitbashery.AI
 
         #region Methods:
 
-        /// <summary>
-        /// Executes an action based on a string that should match an action's name in this module.
-        /// </summary>
-        /// <param name="actionName"></param>
         public abstract void executeAction(int actionIndex);
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="conditionName"></param>
         public abstract bool checkCondition(int conditionIndex);
 
         #endregion

@@ -33,7 +33,7 @@ Need support or additional features? Please visit https://kitbashery.com/
 namespace Kitbashery.AI
 {
     /// <summary>
-    /// This module defines actions and conditions for a <see cref="MAI_Agent"/> to be able to detect <see cref="GameObject"/>s in the environment.
+    /// This module defines actions and conditions for a <see cref="AIAgent"/> to be able to detect <see cref="GameObject"/>s in the environment.
     /// </summary>
     [HelpURL("https://kitbashery.com/docs/modular-ai/sensor-module.html")]
     [AddComponentMenu("Kitbashery/AI/AI Modules/Sensor Module")]
@@ -70,10 +70,7 @@ namespace Kitbashery.AI
         [Tooltip("Should trigger colliders be ignored? See QueryTriggerInteraction in the Unity Manual.")]
         public QueryTriggerInteraction triggerInteraction = QueryTriggerInteraction.Ignore;
 
-        public enum SensorTypes { sphere, box, ray, _2D_circle, _2D_box, _2D_line}
         public SensorTypes sensorType = SensorTypes.sphere;
-
-        public enum ScanTypes { environment, players, agents, environmentFiltered }
 
         [Space]
         [Tooltip("The scan range or bounds of the AI's sensor; A minium of twice the NavMeshAgent's height is recommended.")]
@@ -493,4 +490,7 @@ namespace Kitbashery.AI
 
         #endregion
     }
+
+    public enum SensorTypes { sphere, box, ray, _2D_circle, _2D_box, _2D_line }
+    public enum ScanTypes { environment, players, agents, environmentFiltered }
 }

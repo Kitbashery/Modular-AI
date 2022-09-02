@@ -141,4 +141,5 @@ namespace Kitbashery.AI
             }
         }
     }
+    public enum PatrolTypes { loop, pingPong, randomize }
 }

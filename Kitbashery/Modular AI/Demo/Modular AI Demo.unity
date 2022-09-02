@@ -183,6 +183,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   modules:
   - {fileID: 140035931}
+  modulesChanged: 0
   behaviours:
   - name: Chase
     actions:
@@ -315,6 +316,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   modules:
   - {fileID: 349635438}
+  modulesChanged: 1
   behaviours:
   - name: Patrol
     actions:
@@ -465,6 +467,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   modules:
   - {fileID: 377610760}
+  modulesChanged: 1
   behaviours:
   - name: Chase
     actions:
@@ -897,6 +900,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   modules:
   - {fileID: 1035854853}
+  modulesChanged: 0
   behaviours:
   - name: Flee
     actions:
@@ -1249,6 +1253,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   modules:
   - {fileID: 1148277052}
+  modulesChanged: 1
   behaviours:
   - name: Wander
     actions:

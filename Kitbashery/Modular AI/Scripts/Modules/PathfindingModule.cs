@@ -95,6 +95,7 @@ namespace Kitbashery.AI
         /// How long the agent should wait until it wanders again.
         /// </summary>
         [Tooltip("How long the agent should wait until it wanders again.")]
+        [Min(0)]
         public float wanderTime = 1.5f;
 
         private bool isWandering = false;
@@ -105,12 +106,12 @@ namespace Kitbashery.AI
         public float patrolWaitTime = 0;
 
         [Tooltip("How many times the agent should patrol though its waypoint route. (0 = forever)")]
+        [Min(0)]
         public int timesToPatrol = 0;
 
         [HideInInspector]
         public int timesPatroled = 0;
 
-        public enum PatrolTypes { loop, pingPong, randomize }
         public PatrolTypes patrolType = PatrolTypes.loop;
 
         /// <summary>
@@ -218,7 +219,7 @@ namespace Kitbashery.AI
             {
                 if (_actions == null || _actions.Length == 0)
                 {
-                    _actions = new string[12] { "flee", "follow target", "idle", "move to target", "patrol", "stop patrol", "wander", "go to previous location", "path target = focus object", "path target = focus agent", "path target = focus player", "path target = nothing"};
+                    _actions = new string[12] { "flee", "follow target", "idle", "move to target", "patrol", "stop patrol", "wander", "go to previous location", "path target = focus object", "path target = focus agent", "path target = focus player", "path target = nothing" };
                 }
                 return _actions;
             }

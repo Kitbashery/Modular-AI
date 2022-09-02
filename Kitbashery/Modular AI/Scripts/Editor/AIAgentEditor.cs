@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -157,7 +157,7 @@ namespace Kitbashery.AI
 
         #region Methods:
 
-        public void RefreshModules()
+        private void RefreshModules()
         {
             addingCondition = false;
             addingAction = false;
@@ -177,7 +177,7 @@ namespace Kitbashery.AI
             self.modulesChanged = false;
         }
 
-        public void DrawModules()
+        private void DrawModules()
         {
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             EditorGUILayout.BeginHorizontal();
@@ -252,7 +252,7 @@ namespace Kitbashery.AI
             EditorGUILayout.EndVertical();
         }
 
-        public void DrawModuleRefreshButton()
+        private void DrawModuleRefreshButton()
         {
             /*GUIContent content = EditorGUIUtility.IconContent("Refresh");
             content.tooltip = "Refesh Modules";
@@ -263,7 +263,7 @@ namespace Kitbashery.AI
             }*/
         }
 
-        public void DrawPagination()
+        private void DrawPagination()
         {
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Behaviours:", MAI_EditorUtility.clippingBoldLabel, GUILayout.Width(65));
@@ -347,7 +347,7 @@ namespace Kitbashery.AI
             }
         }
 
-        public void DrawBehaviourOptions(SerializedProperty behaviour)
+        private void DrawBehaviourOptions(SerializedProperty behaviour)
         {
             GUILayout.Box("", MAI_EditorUtility.thickHorizontalLine);
             if (renaming == true)
@@ -385,14 +385,14 @@ namespace Kitbashery.AI
             DrawBrokenReferenceNotice();
         }
 
-        public void DrawBehaviourList(SerializedProperty list, int page)
+        private void DrawBehaviourList(SerializedProperty list, int page)
         {
             DrawEventList(behaviours.GetArrayElementAtIndex(page).FindPropertyRelative("conditions"), ref showConditions, "Conditions", true);
             EditorGUILayout.Space();
             DrawEventList(behaviours.GetArrayElementAtIndex(page).FindPropertyRelative("actions"), ref showActions, "Actions", false);
         }
 
-        public void DrawEventList(SerializedProperty list, ref bool fold, string label, bool isCondition)
+        private void DrawEventList(SerializedProperty list, ref bool fold, string label, bool isCondition)
         {
             fold = MAI_EditorUtility.DrawFoldout(fold, label);
             if (fold == true)
@@ -536,7 +536,7 @@ namespace Kitbashery.AI
             }
         }
 
-        public void DrawEventCreationGUI(SerializedProperty list, bool isCondition)
+        private void DrawEventCreationGUI(SerializedProperty list, bool isCondition)
         {
             if (list != null)
             {
@@ -680,7 +680,7 @@ namespace Kitbashery.AI
 
         }
 
-        public void DrawSettings()
+        private void DrawSettings()
         {
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             EditorGUILayout.LabelField("Agent Settings:", EditorStyles.boldLabel);

@@ -34,7 +34,7 @@ Need support or additional features? Please visit https://kitbashery.com/
 namespace Kitbashery.AI
 {
     /// <summary>
-    /// Represents an action or condition that will be executed or evaluated by <see cref="MAI_Agent"/>.
+    /// Represents an action or condition that will be executed or evaluated by <see cref="AIAgent"/>.
     /// </summary>
     [Serializable]
     public class BehaviourEvent : IComparable<BehaviourEvent>
@@ -91,7 +91,7 @@ namespace Kitbashery.AI
             }
             else
             {
-                Debug.LogError("|MAI|: Tried to construct an event but the parameter module was null. This event wont track module dependencies. Remove the event and try again.");
+                Debug.LogError("|Modular AI|: Tried to construct an event but the parameter module was null. This event wont track module dependencies. Remove the event and try again.");
             }
 
             id = eventID;
@@ -113,7 +113,7 @@ namespace Kitbashery.AI
             }
             else
             {
-                Debug.LogError("|MAI|: Tried to construct an event but the parameter module was null. This event wont track module dependencies. Remove the event and try again.");
+                Debug.LogError("|Modular AI|: Tried to construct an event but the parameter module was null. This event wont track module dependencies. Remove the event and try again.");
             }
 
             id = eventID;
