@@ -5,7 +5,7 @@ Modular AI is an inspector based visual behaviour designer.
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/S6S8EKDY5)
 
 ## Features:
-* Implements competeing utility theory behaviours for dynamic AI behaviours.
+* Implements competing utility theory behaviours for dynamic AI behaviours.
 * Zero string comparisons or calls to reflection.
 * Behaviours can be fully configured during runtime.
 * Not tied to a specific pathfinding solution.
@@ -21,12 +21,12 @@ Modular AI is an inspector based visual behaviour designer.
 * Patrol
 
 #### Memory:
-* Remember players, AI agents or environment objects.
+* Remember players, AI agents, or environment objects.
 * Focus/target objects in memory
 * Invoke custom events.
 
 #### Sensors:
-* Eye level scans
+* Eye-level scans
 * Physics Scan Options for 2D & 3D
 * Integrated with memory
 
