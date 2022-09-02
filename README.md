@@ -1,3 +1,4 @@
+![](https://kitbashery.com/assets/images/kitbashery-github-banner.jpg)
 # Modular-AI
 Modular AI is an inspector based visual behaviour designer.
 
