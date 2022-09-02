@@ -31,3 +31,6 @@ Modular AI is an inspector based visual behaviour designer.
 * Idle, Walk, Run & Jump
 * Attack, Death Animations
 * Dynamic Hit reactions
+
+# 
+The name Kitbashery & all associated images Copyright &copy; 2022 Kitbashery. All Rights Reserved.
