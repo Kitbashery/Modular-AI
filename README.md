@@ -1,8 +1,11 @@
 ![](https://kitbashery.com/assets/images/kitbashery-github-banner.jpg)
+
+[![Unity Version](https://img.shields.io/badge/Unity-2021.3%2B-blue.svg)](https://unity3d.com/get-unity/download)
+[![GitHub](https://img.shields.io/github/license/kitbashery/modular-ai.svg)](https://github.com/Kitbashery/Modular-AI/blob/main/LICENSE)
+[![Support Development](https://img.shields.io/badge/Ko--fi-Support%20Development-%23ff5f5f)](https://ko-fi.com/S6S8EKDY5)
+
 # Modular-AI
 Modular AI is an inspector based visual behaviour designer.
-
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/S6S8EKDY5)
 
 ## Features:
 * Implements competing utility theory behaviours for dynamic AI behaviours.
