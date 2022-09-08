@@ -1,0 +1,29 @@
+{
+  "name": "com.kitbashery.modular-ai",
+  "version": "2.0.0",
+  "displayName": "Modular AI",
+  "description": "Modular AI is an inspector based visual behaviour designer.",
+  "unity": "2021.3",
+  "unityRelease": "0f1",
+  "documentationUrl": "https://kitbashery.com/docs/modular-ai",
+  "changelogUrl": "https://github.com/Kitbashery/Modular-AI/releases",
+  "licensesUrl": "https://github.com/Kitbashery/Modular-AI/blob/main/LICENSE",
+  "keywords": [
+    "AI",
+    "Behaviour",
+    "Visual Scripting"
+  ],
+  "author": {
+    "name": "Kitbashery",
+    "email": "kitbashery@gmail.com",
+    "url": "https://www.kitbashery.com"
+  },
+  "type": "tool",
+  "samples": [
+        {
+            "displayName": "Demo Scene(s)",
+            "description": "Modular AI Demo scenes.",
+            "path": "Samples~/Demo"
+        }
+]
+}

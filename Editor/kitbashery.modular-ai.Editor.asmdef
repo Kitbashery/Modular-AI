@@ -1,0 +1,16 @@
+{
+    "name": "kitbashery.modular-ai.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:ccf8ba3375b6aeb46bcf987ccab5d75a"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
