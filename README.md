@@ -1,3 +1,5 @@
+<!-- ONLINE DOCUMENTATION FOUND @ https://kitbashery.com/docs/modular-ai -->
+
 ![](https://kitbashery.com/assets/images/kitbashery-github-banner.jpg)
 
 [![Unity Version](https://img.shields.io/badge/Unity-2021.3%2B-blue.svg)](https://unity3d.com/get-unity/download)
