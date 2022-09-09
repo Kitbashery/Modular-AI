@@ -44,5 +44,14 @@ Modular AI is an inspector based visual behaviour designer.
 * Attack, Death Animations
 * Dynamic Hit reactions
 
+# Getting Started:
+All components can be found under Kitbashery in the component menu:
+![](https://kitbashery.com/assets/images/kitbashery-modular-ai-component-navigation.jpg)
+
+Online documentation & scripting API is found at:
+
+https://kitbashery.com/docs/game-kit
+
+
 # 
 The name Kitbashery & all associated images Copyright &copy; 2022 Kitbashery. All Rights Reserved.
