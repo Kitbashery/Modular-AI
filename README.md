@@ -3,7 +3,7 @@
 [![Unity Version](https://img.shields.io/badge/Unity-2021.3%2B-blue.svg)](https://unity3d.com/get-unity/download)
 [![GitHub](https://img.shields.io/github/license/kitbashery/modular-ai.svg)](https://github.com/Kitbashery/Modular-AI/blob/main/LICENSE)
 [![OpenUPM](https://img.shields.io/badge/Install-openUPM-blue)](https://openupm.com/packages/com.kitbashery.modular-ai.html)
-[![Latest](https://img.shields.io/badge/Manual%20Install-.unitypackage-blue)](https://github.com/Kitbashery/Modular-AI/releases/download/Latest/Kitbashery_ModularAI.unitypackage)
+[![Latest](https://img.shields.io/badge/Manual%20Install-.unitypackage-blue)](https://github.com/Kitbashery/kitbashery.github.io/raw/main/assets/packages/Kitbashery_ModularAI.unitypackage)
 [![AssetStore](https://img.shields.io/badge/Download%20LTS-Asset%20Store-blue)](https://assetstore.unity.com/packages/slug/231965)
 [![Support Development](https://img.shields.io/badge/Ko--fi-Support%20Development-%23ff5f5f)](https://ko-fi.com/S6S8EKDY5)
 
