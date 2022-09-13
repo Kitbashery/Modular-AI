@@ -50,7 +50,23 @@ All components can be found under Kitbashery in the component menu:
 
 Online documentation & scripting API is found at:
 
-https://kitbashery.com/docs/game-kit
+https://kitbashery.com/docs/modular-ai
+
+## Utility Theory:
+
+Modular AI uses utility theory for its AI behaviour logic. An AI agent can have as many behaviours as you want.
+
+### Behaviours:
+Behaviours are comprised of conditions and actions and have a score value. The behaviour with the score that best meets the score type you set will execute its actions.
+### Conditions:
+Conditions are true/false statements based on what the AI knows about the game world. If a condition meets its desired state then it will add its score to the behaviour's total score.
+### Actions:
+Actions are executed in the order they are arranged if a behaviour's total score meets the score type better than any other behaviour.
+
+
+## Module Scripting:
+Take a look at the docs for [ExampleModule.cs](https://kitbashery.com/docs/modular-ai/example-module.html) for how to create your own modules.
+
 
 
 ---
