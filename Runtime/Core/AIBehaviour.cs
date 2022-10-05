@@ -48,6 +48,11 @@ namespace Kitbashery.AI
         [SerializeField]
         public List<BehaviourEvent> conditions = new List<BehaviourEvent>();
 
+        /// <summary>
+        /// The score theshold conditions need to reach for actions to execute (if behaviours are not competing).
+        /// </summary>
+        public int threshold;
+
         #endregion
 
         public AIBehaviour(string behaviourName, List<BehaviourEvent> behaviourConditions, List<BehaviourEvent> behaviourActions)
@@ -55,6 +60,15 @@ namespace Kitbashery.AI
             actions = behaviourActions;
             conditions = behaviourConditions;
             name = behaviourName;
+            threshold = 0;
+        }
+
+        public AIBehaviour(string behaviourName, List<BehaviourEvent> behaviourConditions, List<BehaviourEvent> behaviourActions, int scoreThreshold)
+        {
+            actions = behaviourActions;
+            conditions = behaviourConditions;
+            name = behaviourName;
+            threshold = scoreThreshold;
         }
 
         // Required by IComparable.

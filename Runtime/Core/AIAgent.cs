@@ -74,7 +74,7 @@ namespace Kitbashery.AI
         public DebugLevels debugLevel = DebugLevels.BehavioursOnly;
 
         [SerializeField]
-        [Tooltip("The condition a behaviour's score needs to meet for its actions to execute.")]
+        [Tooltip("The condition a behaviour's total score needs to meet for its actions to execute.")]
         public ScoreTypes scoreType = ScoreTypes.HighestScoreWins;
 
         [SerializeField]
@@ -82,9 +82,10 @@ namespace Kitbashery.AI
         public int scoreThreshold = 0;
 
         /// <summary>
-        /// List of <see cref="AIBehaviour"/>s that meet the condition of <see cref="scoreType"/>.
+        /// List of <see cref="AIBehaviour"/>s that met their score criteria during evaluation.
         /// </summary>
-        private List<AIBehaviour> winningBehaviours = new List<AIBehaviour>();
+        [HideInInspector]
+        public List<AIBehaviour> winningBehaviours = new List<AIBehaviour>();
 
         /// <summary>
         /// The current score a behaviour needs to beat to win.
@@ -102,6 +103,17 @@ namespace Kitbashery.AI
         /// </summary>
         [HideInInspector]
         private List<BehaviourEvent> brokenEvents = new List<BehaviourEvent>();
+
+        /// <summary>
+        /// Should behaviours compete for a single score criteria?
+        /// </summary>
+        [Tooltip("Should behaviours compete for a single score criteria?")]
+        public bool useCompetingBehaviours = false;
+
+        /// <summary>
+        /// The current total score.
+        /// </summary>
+        private int score = 0;
 
         #endregion
 
@@ -177,98 +189,137 @@ namespace Kitbashery.AI
         /// </summary>
         private void EvaluateBehaviours()
         {
-            for (int b = behaviours.Count - 1; b >= 0; b--)
+            if(useCompetingBehaviours == false)
             {
-                int score = 0;
-                for (int c = behaviours[b].conditions.Count - 1; c >= 0; c--)
+                for (int b = behaviours.Count - 1; b >= 0; b--)
                 {
-                    if (behaviours[b].conditions[c].instance != null)
+                    score = 0;
+                    for (int c = behaviours[b].conditions.Count - 1; c >= 0; c--)
                     {
-                        if (behaviours[b].conditions[c].instance.checkCondition(behaviours[b].conditions[c].id) == behaviours[b].conditions[c].state)
+                        if (behaviours[b].conditions[c].instance != null)
                         {
-                            score += behaviours[b].conditions[c].score;
-
-                            if (debugMode == true && (debugLevel == DebugLevels.All || debugLevel == DebugLevels.ConditionsOnly))
+                            if (behaviours[b].conditions[c].instance.checkCondition(behaviours[b].conditions[c].id) == behaviours[b].conditions[c].state)
                             {
-                                Debug.LogFormat(gameObject, "|Modular AI|: Condition in behaviour: '{0}'  met its state and scored '{1}' total score is now {2}. ", behaviours[b].name, behaviours[b].conditions[c].score, score);
-                            }
+                                score += behaviours[b].conditions[c].score;
 
-                            if (scoreType == ScoreTypes.FirstScoreWins)
-                            {
-                                if (score > 0)
+                                if (debugMode == true && (debugLevel == DebugLevels.All || debugLevel == DebugLevels.ConditionsOnly))
                                 {
-                                    if (debugMode == true && (debugLevel == DebugLevels.All || debugLevel == DebugLevels.BehavioursOnly))
-                                    {
-                                        Debug.LogFormat(gameObject, "|Modular AI|: First behaviour to score above the threshold is: '{0}' This behaviour will win. | Score = {1}", behaviours[b].name, score);
-                                    }
-                                    winningBehaviours.Add(behaviours[b]);
-                                    break;
+                                    Debug.LogFormat(gameObject, "|Modular AI|: Condition in behaviour: '{0}'  met its state and scored '{1}' total score is now {2}. ", behaviours[b].name, behaviours[b].conditions[c].score, score);
                                 }
-                            }
-                            else if (scoreType == ScoreTypes.FirstScoreAboveThreshold)
-                            {
-                                if (score > scoreThreshold)
+
+                                if (score >= behaviours[b].threshold)
                                 {
                                     if (debugMode == true && (debugLevel == DebugLevels.All || debugLevel == DebugLevels.BehavioursOnly))
                                     {
-                                        Debug.LogFormat(gameObject, "|Modular AI|: First behaviour to score above the threshold is: '{0}' This behaviour will win. | Score = {1}", behaviours[b].name, score);
+                                        Debug.LogFormat(gameObject, "|Modular AI|: Behaviour's total score meets or exceeds its threshold of: '{0}' This behaviour will have its actions executed. | Score = {1}", behaviours[b].name, score);
                                     }
+
                                     winningBehaviours.Add(behaviours[b]);
-                                    break;
                                 }
                             }
                         }
-                    }
-                    else
-                    {
-                        Debug.LogWarningFormat(gameObject, "|Modular AI|: Tried to check " + behaviours[b].conditions[c] + @"" + behaviours[b].conditions[c].name + @"" + " but a module was missing; ignoring condition.");
+                        else
+                        {
+                            Debug.LogWarningFormat(gameObject, "|Modular AI|: Tried to check " + behaviours[b].conditions[c] + @"" + behaviours[b].conditions[c].name + @"" + " but a module was missing; ignoring condition.");
+                        }
                     }
                 }
-
-                switch (scoreType)
+            }
+            else
+            {
+                for (int b = behaviours.Count - 1; b >= 0; b--)
                 {
-                    case ScoreTypes.AllScoresAboveThreshold:
-
-                        if (score > scoreThreshold)
+                    score = 0;
+                    for (int c = behaviours[b].conditions.Count - 1; c >= 0; c--)
+                    {
+                        if (behaviours[b].conditions[c].instance != null)
                         {
-                            if (debugMode == true && (debugLevel == DebugLevels.All || debugLevel == DebugLevels.BehavioursOnly))
+                            if (behaviours[b].conditions[c].instance.checkCondition(behaviours[b].conditions[c].id) == behaviours[b].conditions[c].state)
                             {
-                                Debug.LogFormat(gameObject, "|Modular AI|: Behaviour '{0}' scored above the threshold and will have it's actions executed. Score = {1}", behaviours[b].name, score);
+                                score += behaviours[b].conditions[c].score;
+
+                                if (debugMode == true && (debugLevel == DebugLevels.All || debugLevel == DebugLevels.ConditionsOnly))
+                                {
+                                    Debug.LogFormat(gameObject, "|Modular AI|: Condition in behaviour: '{0}'  met its state and scored '{1}' total score is now {2}. ", behaviours[b].name, behaviours[b].conditions[c].score, score);
+                                }
+
+                                if (scoreType == ScoreTypes.FirstScoreWins)
+                                {
+                                    if (score > 0)
+                                    {
+                                        if (debugMode == true && (debugLevel == DebugLevels.All || debugLevel == DebugLevels.BehavioursOnly))
+                                        {
+                                            Debug.LogFormat(gameObject, "|Modular AI|: First behaviour to score above the threshold is: '{0}' This behaviour will win. | Score = {1}", behaviours[b].name, score);
+                                        }
+                                        winningBehaviours.Add(behaviours[b]);
+                                        break;
+                                    }
+                                }
+                                else if (scoreType == ScoreTypes.FirstScoreAboveThreshold)
+                                {
+                                    if (score > scoreThreshold)
+                                    {
+                                        if (debugMode == true && (debugLevel == DebugLevels.All || debugLevel == DebugLevels.BehavioursOnly))
+                                        {
+                                            Debug.LogFormat(gameObject, "|Modular AI|: First behaviour to score above the threshold is: '{0}' This behaviour will win. | Score = {1}", behaviours[b].name, score);
+                                        }
+                                        winningBehaviours.Add(behaviours[b]);
+                                        break;
+                                    }
+                                }
                             }
-                            winningBehaviours.Add(behaviours[b]);
                         }
-
-                        break;
-
-                    case ScoreTypes.HighestScoreWins:
-
-                        if (score > scoreToBeat)
+                        else
                         {
-                            if (debugMode == true && (debugLevel == DebugLevels.All || debugLevel == DebugLevels.BehavioursOnly))
-                            {
-                                Debug.LogFormat(gameObject, "|Modular AI|: Behaviour '{0}' scored above the current highest score and is now the new winner. Score = {1}", behaviours[b].name, score);
-                            }
-                            scoreToBeat = score;
-                            winningBehaviours.Clear();
-                            winningBehaviours.Add(behaviours[b]);
+                            Debug.LogWarningFormat(gameObject, "|Modular AI|: Tried to check " + behaviours[b].conditions[c] + @"" + behaviours[b].conditions[c].name + @"" + " but a module was missing; ignoring condition.");
                         }
+                    }
 
-                        break;
+                    switch (scoreType)
+                    {
+                        case ScoreTypes.AllScoresAboveThreshold:
 
-                    case ScoreTypes.LowestScoreWins:
-
-                        if (score < scoreToBeat)
-                        {
-                            if (debugMode == true && (debugLevel == DebugLevels.All || debugLevel == DebugLevels.BehavioursOnly))
+                            if (score > scoreThreshold)
                             {
-                                Debug.LogFormat(gameObject, "|Modular AI|: Behaviour '{0}' scored below the current lowest score and is now the new winner. Score = {1}", behaviours[b].name, score);
+                                if (debugMode == true && (debugLevel == DebugLevels.All || debugLevel == DebugLevels.BehavioursOnly))
+                                {
+                                    Debug.LogFormat(gameObject, "|Modular AI|: Behaviour '{0}' scored above the threshold and will have it's actions executed. Score = {1}", behaviours[b].name, score);
+                                }
+                                winningBehaviours.Add(behaviours[b]);
                             }
-                            scoreToBeat = score;
-                            winningBehaviours.Clear();
-                            winningBehaviours.Add(behaviours[b]);
-                        }
 
-                        break;
+                            break;
+
+                        case ScoreTypes.HighestScoreWins:
+
+                            if (score > scoreToBeat)
+                            {
+                                if (debugMode == true && (debugLevel == DebugLevels.All || debugLevel == DebugLevels.BehavioursOnly))
+                                {
+                                    Debug.LogFormat(gameObject, "|Modular AI|: Behaviour '{0}' scored above the current highest score and is now the new winner. Score = {1}", behaviours[b].name, score);
+                                }
+                                scoreToBeat = score;
+                                winningBehaviours.Clear();
+                                winningBehaviours.Add(behaviours[b]);
+                            }
+
+                            break;
+
+                        case ScoreTypes.LowestScoreWins:
+
+                            if (score < scoreToBeat)
+                            {
+                                if (debugMode == true && (debugLevel == DebugLevels.All || debugLevel == DebugLevels.BehavioursOnly))
+                                {
+                                    Debug.LogFormat(gameObject, "|Modular AI|: Behaviour '{0}' scored below the current lowest score and is now the new winner. Score = {1}", behaviours[b].name, score);
+                                }
+                                scoreToBeat = score;
+                                winningBehaviours.Clear();
+                                winningBehaviours.Add(behaviours[b]);
+                            }
+
+                            break;
+                    }
                 }
             }
         }

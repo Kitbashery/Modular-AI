@@ -68,7 +68,9 @@ namespace Kitbashery.AI
 
         private bool renaming = false;
 
-        SerializedProperty behaviours, preActionExecution, postActionExecution, debugMode, debugLevel, scoreType, scoreThreshold;
+        SerializedProperty behaviours, preActionExecution, postActionExecution, debugMode, debugLevel, scoreType, scoreThreshold, useCompetingBehaviours;
+
+        const string nameStr = "name", actionsStr = "actions", conditionsStr = "conditions", scoreStr = "score";
 
         #endregion
 
@@ -83,6 +85,7 @@ namespace Kitbashery.AI
             postActionExecution = serializedObject.FindProperty("postActionExecution");
             scoreType = serializedObject.FindProperty("scoreType");
             scoreThreshold = serializedObject.FindProperty("scoreThreshold");
+            useCompetingBehaviours = serializedObject.FindProperty("useCompetingBehaviours");
 
             RefreshModules();
         }
@@ -131,9 +134,9 @@ namespace Kitbashery.AI
                 {
                     EditorGUILayout.BeginVertical(EditorStyles.helpBox);
                     DrawPagination();
-                    DrawBehaviourOptions( behaviours.GetArrayElementAtIndex(pagination - 1));
+                    DrawBehaviourOptions(behaviours.GetArrayElementAtIndex(pagination - 1));
                     EditorGUILayout.Space();
-                    DrawBehaviourList( behaviours, pagination - 1);
+                    DrawBehaviourList(behaviours, pagination - 1);
                     EditorGUILayout.Space();
                     EditorGUILayout.EndVertical();
                 }
@@ -282,9 +285,10 @@ namespace Kitbashery.AI
             if (GUILayout.Button(new GUIContent("+", "Add Behaviour"), EditorStyles.miniButtonRight, GUILayout.Width(22)))
             {
                 behaviours.InsertArrayElementAtIndex(behaviours.arraySize);
-                behaviours.GetArrayElementAtIndex(behaviours.arraySize - 1).FindPropertyRelative("name").stringValue = "New Behaviour " + (behaviours.arraySize);
-                behaviours.GetArrayElementAtIndex(behaviours.arraySize - 1).FindPropertyRelative("actions").ClearArray();
-                behaviours.GetArrayElementAtIndex(behaviours.arraySize - 1).FindPropertyRelative("conditions").ClearArray();
+                behaviours.GetArrayElementAtIndex(behaviours.arraySize - 1).FindPropertyRelative(nameStr).stringValue = "New Behaviour " + (behaviours.arraySize);
+                behaviours.GetArrayElementAtIndex(behaviours.arraySize - 1).FindPropertyRelative(actionsStr).ClearArray();
+                behaviours.GetArrayElementAtIndex(behaviours.arraySize - 1).FindPropertyRelative(conditionsStr).ClearArray();
+                behaviours.GetArrayElementAtIndex(behaviours.arraySize - 1).FindPropertyRelative("threshold").intValue = 0;
                 pagination = behaviours.arraySize;
             }
             /*
@@ -300,7 +304,7 @@ namespace Kitbashery.AI
                 //Move the original back to where it was in the array.
                 behaviours.GetArrayElementAtIndex(behaviours.arraySize - 1).MoveArrayElement(behaviours.arraySize - 1, originalIndex + 1);
                 //Change the name of the duplicated behaviour (it should be at the end).
-                behaviours.GetArrayElementAtIndex(behaviours.arraySize - 1).FindPropertyRelative("name").stringValue = behaviours.GetArrayElementAtIndex(behaviours.arraySize -1).FindPropertyRelative("name").stringValue + " (copy)";
+                behaviours.GetArrayElementAtIndex(behaviours.arraySize - 1).FindPropertyRelative(nameStr).stringValue = behaviours.GetArrayElementAtIndex(behaviours.arraySize -1).FindPropertyRelative(nameStr).stringValue + " (copy)";
                 pagination = behaviours.arraySize;
             }
             */
@@ -334,10 +338,10 @@ namespace Kitbashery.AI
                 EditorGUILayout.BeginVertical();
                 EditorGUILayout.LabelField("Behaviours:", EditorStyles.boldLabel);
                 EditorGUILayout.LabelField("Sets of logic that compete to have the best score as determined by the score type.", MAI_EditorUtility.wrappedMiniLabel);
-                GUILayout.Box("", MAI_EditorUtility.horizontalLine);
+                GUILayout.Box(string.Empty, MAI_EditorUtility.horizontalLine);
                 EditorGUILayout.LabelField("Conditions:", EditorStyles.boldLabel);
                 EditorGUILayout.LabelField("A conditional statement that adds a defined score to a behaviour's total score if the statment meets it's target state.", MAI_EditorUtility.wrappedMiniLabel);
-                GUILayout.Box("", MAI_EditorUtility.horizontalLine);
+                GUILayout.Box(string.Empty, MAI_EditorUtility.horizontalLine);
                 EditorGUILayout.LabelField("Actions:", EditorStyles.boldLabel);
                 EditorGUILayout.LabelField("Code that executes when a behaviour's score wins over all other behaviour scores.", MAI_EditorUtility.wrappedMiniLabel);
                 EditorGUILayout.Space();
@@ -349,11 +353,11 @@ namespace Kitbashery.AI
 
         private void DrawBehaviourOptions(SerializedProperty behaviour)
         {
-            GUILayout.Box("", MAI_EditorUtility.thickHorizontalLine);
+            GUILayout.Box(string.Empty, MAI_EditorUtility.thickHorizontalLine);
             if (renaming == true)
             {
                 EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
-                behaviour.FindPropertyRelative("name").stringValue = EditorGUILayout.TextField(behaviour.FindPropertyRelative("name").stringValue);
+                behaviour.FindPropertyRelative(nameStr).stringValue = EditorGUILayout.TextField(behaviour.FindPropertyRelative(nameStr).stringValue);
                 if (GUILayout.Button("Apply", EditorStyles.miniButton))
                 {
                     renaming = false;
@@ -363,13 +367,13 @@ namespace Kitbashery.AI
             else
             {
                 EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
-                if (renaming == false && GUILayout.Button(new GUIContent(behaviour.FindPropertyRelative("name").stringValue, "Click to rename."), MAI_EditorUtility.centeredLabel, GUILayout.ExpandWidth(true)))
+                if (renaming == false && GUILayout.Button(new GUIContent(behaviour.FindPropertyRelative(nameStr).stringValue, "Click to rename."), MAI_EditorUtility.centeredLabel, GUILayout.ExpandWidth(true)))
                 {
                     renaming = true;
                 }
                 if (behaviours.arraySize > 1)
                 {
-                    if (GUILayout.Button(new GUIContent("", "Remove Behaviour"), "OL Minus", GUILayout.Width(20)))
+                    if (GUILayout.Button(new GUIContent(string.Empty, "Remove Behaviour"), "OL Minus", GUILayout.Width(20)))
                     {
                         behaviours.DeleteArrayElementAtIndex(pagination - 1);
                         if (pagination > 1)
@@ -381,15 +385,20 @@ namespace Kitbashery.AI
                 EditorGUILayout.EndHorizontal();
             }
 
-            GUILayout.Box("", MAI_EditorUtility.horizontalLine);
+            GUILayout.Box(string.Empty, MAI_EditorUtility.horizontalLine);
             DrawBrokenReferenceNotice();
         }
 
         private void DrawBehaviourList(SerializedProperty list, int page)
         {
-            DrawEventList(behaviours.GetArrayElementAtIndex(page).FindPropertyRelative("conditions"), ref showConditions, "Conditions", true);
+            DrawEventList(list.GetArrayElementAtIndex(page).FindPropertyRelative(conditionsStr), ref showConditions, "Conditions", true);
             EditorGUILayout.Space();
-            DrawEventList(behaviours.GetArrayElementAtIndex(page).FindPropertyRelative("actions"), ref showActions, "Actions", false);
+            DrawEventList(list.GetArrayElementAtIndex(page).FindPropertyRelative(actionsStr), ref showActions, "Actions", false);
+            EditorGUILayout.Space();
+            if(useCompetingBehaviours.boolValue == false)
+            {
+                list.GetArrayElementAtIndex(page).FindPropertyRelative("threshold").intValue = EditorGUILayout.IntField(new GUIContent("Score Threshold", "The value conditions need to meet or exceed for the behaviour's actions to execute."), list.GetArrayElementAtIndex(page).FindPropertyRelative("threshold").intValue);
+            }
         }
 
         private void DrawEventList(SerializedProperty list, ref bool fold, string label, bool isCondition)
@@ -428,10 +437,10 @@ namespace Kitbashery.AI
                                 {
                                     //Draw condition:
                                     EditorGUILayout.BeginVertical(EditorStyles.miniButtonLeft, GUILayout.Width(20));
-                                    element.FindPropertyRelative("score").intValue = Mathf.Clamp(EditorGUILayout.IntField(element.FindPropertyRelative("score").intValue, MAI_EditorUtility.centeredMiniLabel, GUILayout.Width(20)), 1, 999);
+                                    element.FindPropertyRelative(scoreStr).intValue = Mathf.Clamp(EditorGUILayout.IntField(element.FindPropertyRelative(scoreStr).intValue, MAI_EditorUtility.centeredMiniLabel, GUILayout.Width(20)), 1, 999);
                                     EditorGUILayout.EndVertical();
                                     EditorGUILayout.BeginVertical(EditorStyles.miniButtonMid);
-                                    GUILayout.Label(element.FindPropertyRelative("name").stringValue, MAI_EditorUtility.centeredMiniLabel);
+                                    GUILayout.Label(element.FindPropertyRelative(nameStr).stringValue, MAI_EditorUtility.centeredMiniLabel);
                                     EditorGUILayout.EndVertical();
                                     EditorGUILayout.BeginVertical(EditorStyles.miniButtonRight, GUILayout.Width(30));
                                     SerializedProperty state = element.FindPropertyRelative("state");
@@ -488,12 +497,12 @@ namespace Kitbashery.AI
                                     {
                                         EditorGUILayout.BeginHorizontal(EditorStyles.miniButtonRight);
                                     }
-                                    EditorGUILayout.LabelField(element.FindPropertyRelative("name").stringValue, MAI_EditorUtility.upperLeftMiniLabel, GUILayout.MaxWidth(120));
+                                    EditorGUILayout.LabelField(element.FindPropertyRelative(nameStr).stringValue, MAI_EditorUtility.upperLeftMiniLabel, GUILayout.MaxWidth(120));
                                     EditorGUILayout.EndHorizontal();
                                     EditorGUILayout.EndHorizontal();
                                 }
 
-                                if (GUILayout.Button("", "OL Minus", GUILayout.Width(25)))
+                                if (GUILayout.Button(string.Empty, "OL Minus", GUILayout.Width(25)))
                                 {
                                     list.DeleteArrayElementAtIndex(i);
                                 }
@@ -501,7 +510,7 @@ namespace Kitbashery.AI
                             }
                             else
                             {
-                                EditorGUILayout.HelpBox("Missing module for " + element.FindPropertyRelative("name").stringValue, MessageType.Warning);
+                                EditorGUILayout.HelpBox("Missing module for " + element.FindPropertyRelative(nameStr).stringValue, MessageType.Warning);
                                 EditorGUILayout.LabelField("Class name changed? Update it below then attempt repair:");
                                 element.FindPropertyRelative("moduleName").stringValue = EditorGUILayout.TextField(element.FindPropertyRelative("moduleName").stringValue);
                                 EditorGUILayout.LabelField("OR");
@@ -551,7 +560,7 @@ namespace Kitbashery.AI
                     {
                         EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
                         EditorGUILayout.LabelField("Add Condition:", MAI_EditorUtility.centeredBoldLabel);
-                        if (GUILayout.Button("", "OL Plus", GUILayout.Width(20)))
+                        if (GUILayout.Button(string.Empty, "OL Plus", GUILayout.Width(20)))
                         {
                             addingCondition = true;
                         }
@@ -562,22 +571,22 @@ namespace Kitbashery.AI
                         EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 
                         EditorGUILayout.LabelField("New Condition ", MAI_EditorUtility.centeredBoldLabel);
-                        GUILayout.Box("", MAI_EditorUtility.thickHorizontalLine);
+                        GUILayout.Box(string.Empty, MAI_EditorUtility.thickHorizontalLine);
 
                         // Begin variable settings.
                         EditorGUILayout.BeginHorizontal();
                         EditorGUILayout.LabelField(new GUIContent("Score:", "The influence of the condition toward the AI's motivation of acting on the behaviour."), GUILayout.MaxWidth(70));
                         newConditionValue = EditorGUILayout.IntSlider(newConditionValue, 1, 999);
                         EditorGUILayout.EndHorizontal();
-                        GUILayout.Box("", MAI_EditorUtility.thickHorizontalLine);
+                        GUILayout.Box(string.Empty, MAI_EditorUtility.thickHorizontalLine);
                         newConditionState = EditorGUILayout.Toggle(new GUIContent("State: [" + newConditionState.ToString() + "]", "The required state for the condition's score to count."), newConditionState);
 
-                        GUILayout.Box("", MAI_EditorUtility.thickHorizontalLine);
+                        GUILayout.Box(string.Empty, MAI_EditorUtility.thickHorizontalLine);
 
                         selectedModule = MAI_EditorUtility.DrawCompactPopup("Module:", selectedModule, moduleNames);
                         selectedCondition = MAI_EditorUtility.DrawCompactPopup("Conditions:", selectedCondition, self.modules[selectedModule].conditions);
 
-                        GUILayout.Box("", MAI_EditorUtility.thickHorizontalLine);
+                        GUILayout.Box(string.Empty, MAI_EditorUtility.thickHorizontalLine);
 
                         EditorGUILayout.BeginHorizontal();
                         if (GUILayout.Button("Add Condition", EditorStyles.miniButton))
@@ -585,11 +594,11 @@ namespace Kitbashery.AI
                             if (self.modules[selectedModule].conditions.Length > 0)
                             {
                                 list.InsertArrayElementAtIndex(0);
-                                list.GetArrayElementAtIndex(0).FindPropertyRelative("name").stringValue = self.modules[selectedModule].conditions[selectedCondition];
+                                list.GetArrayElementAtIndex(0).FindPropertyRelative(nameStr).stringValue = self.modules[selectedModule].conditions[selectedCondition];
                                 list.GetArrayElementAtIndex(0).FindPropertyRelative("id").intValue = selectedCondition;
                                 list.GetArrayElementAtIndex(0).FindPropertyRelative("instance").objectReferenceValue = self.modules[selectedModule];
                                 list.GetArrayElementAtIndex(0).FindPropertyRelative("moduleName").stringValue = self.modules[selectedModule].GetType().AssemblyQualifiedName;
-                                list.GetArrayElementAtIndex(0).FindPropertyRelative("score").intValue = newConditionValue;
+                                list.GetArrayElementAtIndex(0).FindPropertyRelative(scoreStr).intValue = newConditionValue;
                                 list.GetArrayElementAtIndex(0).FindPropertyRelative("isCondition").boolValue = true;
                                 list.GetArrayElementAtIndex(0).FindPropertyRelative("state").boolValue = newConditionState;
                                 addingCondition = false;
@@ -614,7 +623,7 @@ namespace Kitbashery.AI
                     {
                         EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
                         EditorGUILayout.LabelField("Add Action:", MAI_EditorUtility.centeredBoldLabel);
-                        if (GUILayout.Button("", "OL Plus", GUILayout.Width(20)))
+                        if (GUILayout.Button(string.Empty, "OL Plus", GUILayout.Width(20)))
                         {
                             addingAction = true;
                         }
@@ -626,12 +635,12 @@ namespace Kitbashery.AI
 
                         EditorGUILayout.LabelField("New Action ", MAI_EditorUtility.centeredBoldLabel);
 
-                        GUILayout.Box("", MAI_EditorUtility.thickHorizontalLine);
+                        GUILayout.Box(string.Empty, MAI_EditorUtility.thickHorizontalLine);
                         selectedModule = MAI_EditorUtility.DrawCompactPopup("Module:", selectedModule, moduleNames);
                         selectedAction = MAI_EditorUtility.DrawCompactPopup("Actions:", selectedAction, self.modules[selectedModule].actions);
 
 
-                        GUILayout.Box("", MAI_EditorUtility.thickHorizontalLine);
+                        GUILayout.Box(string.Empty, MAI_EditorUtility.thickHorizontalLine);
                         if (list.arraySize > 1)
                         {
                             EditorGUILayout.HelpBox("Note: actions are executed in the order they are arranged.", MessageType.None);
@@ -642,7 +651,7 @@ namespace Kitbashery.AI
                             if (self.modules[selectedModule].actions.Length > 0)
                             {
                                 list.InsertArrayElementAtIndex(0);
-                                list.GetArrayElementAtIndex(0).FindPropertyRelative("name").stringValue = self.modules[selectedModule].actions[selectedAction];
+                                list.GetArrayElementAtIndex(0).FindPropertyRelative(nameStr).stringValue = self.modules[selectedModule].actions[selectedAction];
                                 list.GetArrayElementAtIndex(0).FindPropertyRelative("id").intValue = selectedAction;
                                 list.GetArrayElementAtIndex(0).FindPropertyRelative("instance").objectReferenceValue = self.modules[selectedModule];
                                 list.GetArrayElementAtIndex(0).FindPropertyRelative("moduleName").stringValue = self.modules[selectedModule].GetType().AssemblyQualifiedName;
@@ -669,7 +678,7 @@ namespace Kitbashery.AI
                 {
                     EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
                     EditorGUILayout.LabelField("Add Condition:", MAI_EditorUtility.centeredBoldLabel);
-                    if (GUILayout.Button("", "OL Plus", GUILayout.Width(20)))
+                    if (GUILayout.Button(string.Empty, "OL Plus", GUILayout.Width(20)))
                     {
                         addingCondition = true;
                     }
@@ -684,20 +693,25 @@ namespace Kitbashery.AI
         {
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             EditorGUILayout.LabelField("Agent Settings:", EditorStyles.boldLabel);
-            GUILayout.Box("", MAI_EditorUtility.thickHorizontalLine);
+            GUILayout.Box(string.Empty, MAI_EditorUtility.thickHorizontalLine);
 
             if (EditorGUILayout.PropertyField(debugMode) == true)
             {
                 EditorGUILayout.PropertyField(debugLevel);
             }
 
-            GUILayout.Box("", MAI_EditorUtility.horizontalLine);
-            EditorGUILayout.PropertyField(scoreType);
-            if (scoreType.enumValueIndex == ((int)ScoreTypes.AllScoresAboveThreshold) || scoreType.enumValueIndex == ((int)ScoreTypes.FirstScoreAboveThreshold))
+            EditorGUILayout.PropertyField(useCompetingBehaviours);
+            if (useCompetingBehaviours.boolValue == true)
             {
-                EditorGUILayout.PropertyField(scoreThreshold);
+                GUILayout.Box(string.Empty, MAI_EditorUtility.horizontalLine);
+                EditorGUILayout.PropertyField(scoreType);
+                if (scoreType.enumValueIndex == ((int)ScoreTypes.AllScoresAboveThreshold) || scoreType.enumValueIndex == ((int)ScoreTypes.FirstScoreAboveThreshold))
+                {
+                    EditorGUILayout.PropertyField(scoreThreshold);
+                }
+                GUILayout.Box(string.Empty, MAI_EditorUtility.horizontalLine);
             }
-            GUILayout.Box("", MAI_EditorUtility.horizontalLine);
+
             EditorGUILayout.Space();
             showEvents = MAI_EditorUtility.DrawFoldout(showEvents, "Events:");
             if (showEvents)
@@ -731,7 +745,7 @@ namespace Kitbashery.AI
             if (self.hasBrokenReferences == true)
             {
                 EditorGUILayout.Space();
-                GUILayout.Box("", MAI_EditorUtility.thickHorizontalLine);
+                GUILayout.Box(string.Empty, MAI_EditorUtility.thickHorizontalLine);
                 EditorGUILayout.HelpBox("Broken logic detected! A missing module could impact gameplay!", MessageType.Error);
                 EditorGUILayout.BeginHorizontal();
                 if (GUILayout.Button("Attempt Repair"))
@@ -745,7 +759,7 @@ namespace Kitbashery.AI
                     self.hasBrokenReferences = false;
                 }
                 EditorGUILayout.EndHorizontal();
-                GUILayout.Box("", MAI_EditorUtility.thickHorizontalLine);
+                GUILayout.Box(string.Empty, MAI_EditorUtility.thickHorizontalLine);
             }
         }
         #endregion
