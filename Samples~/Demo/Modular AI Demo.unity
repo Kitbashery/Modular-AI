@@ -199,19 +199,12 @@ MonoBehaviour:
     - instance: {fileID: 140035931}
       moduleName: Kitbashery.AI.PathfindingModule, Assembly-CSharp, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
-      id: 1
-      name: destination reached
-      isCondition: 1
-      score: 1
-      state: 0
-    - instance: {fileID: 140035931}
-      moduleName: Kitbashery.AI.PathfindingModule, Assembly-CSharp, Version=0.0.0.0,
-        Culture=neutral, PublicKeyToken=null
       id: 2
       name: has pathfinding target
       isCondition: 1
       score: 20
       state: 1
+    threshold: 20
   preActionExecution:
     m_PersistentCalls:
       m_Calls: []
@@ -222,7 +215,9 @@ MonoBehaviour:
   debugLevel: 1
   scoreType: 3
   scoreThreshold: 0
+  winningBehaviours: []
   hasBrokenReferences: 0
+  useCompetingBehaviours: 0
 --- !u!195 &140035933
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -337,6 +332,7 @@ MonoBehaviour:
       isCondition: 1
       score: 1
       state: 0
+    threshold: 1
   preActionExecution:
     m_PersistentCalls:
       m_Calls: []
@@ -347,7 +343,9 @@ MonoBehaviour:
   debugLevel: 1
   scoreType: 3
   scoreThreshold: 0
+  winningBehaviours: []
   hasBrokenReferences: 0
+  useCompetingBehaviours: 0
 --- !u!4 &349635437
 Transform:
   m_ObjectHideFlags: 0
@@ -483,19 +481,12 @@ MonoBehaviour:
     - instance: {fileID: 377610760}
       moduleName: Kitbashery.AI.PathfindingModule, Assembly-CSharp, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
-      id: 1
-      name: destination reached
-      isCondition: 1
-      score: 1
-      state: 0
-    - instance: {fileID: 377610760}
-      moduleName: Kitbashery.AI.PathfindingModule, Assembly-CSharp, Version=0.0.0.0,
-        Culture=neutral, PublicKeyToken=null
       id: 2
       name: has pathfinding target
       isCondition: 1
       score: 20
       state: 1
+    threshold: 20
   preActionExecution:
     m_PersistentCalls:
       m_Calls: []
@@ -506,7 +497,9 @@ MonoBehaviour:
   debugLevel: 1
   scoreType: 3
   scoreThreshold: 0
+  winningBehaviours: []
   hasBrokenReferences: 0
+  useCompetingBehaviours: 0
 --- !u!195 &377610762
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -921,6 +914,7 @@ MonoBehaviour:
       isCondition: 1
       score: 1
       state: 1
+    threshold: 1
   preActionExecution:
     m_PersistentCalls:
       m_Calls: []
@@ -931,7 +925,9 @@ MonoBehaviour:
   debugLevel: 1
   scoreType: 3
   scoreThreshold: 0
+  winningBehaviours: []
   hasBrokenReferences: 0
+  useCompetingBehaviours: 0
 --- !u!195 &1035854849
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -1274,6 +1270,7 @@ MonoBehaviour:
       isCondition: 1
       score: 1
       state: 0
+    threshold: 1
   preActionExecution:
     m_PersistentCalls:
       m_Calls: []
@@ -1284,7 +1281,9 @@ MonoBehaviour:
   debugLevel: 1
   scoreType: 3
   scoreThreshold: 0
+  winningBehaviours: []
   hasBrokenReferences: 0
+  useCompetingBehaviours: 0
 --- !u!195 &1148277054
 NavMeshAgent:
   m_ObjectHideFlags: 0
