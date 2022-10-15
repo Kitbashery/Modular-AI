@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -70,7 +70,7 @@ namespace Kitbashery.AI
 
         SerializedProperty behaviours, preActionExecution, postActionExecution, debugMode, debugLevel, scoreType, scoreThreshold, useCompetingBehaviours;
 
-        const string nameStr = "name", actionsStr = "actions", conditionsStr = "conditions", scoreStr = "score";
+        const string nameStr = "name", actionsStr = "actions", conditionsStr = "conditions", scoreStr = "score", boxStr = "box";
 
         #endregion
 
@@ -187,7 +187,7 @@ namespace Kitbashery.AI
             EditorGUILayout.LabelField("Modules:", MAI_EditorUtility.lowerLeftBoldLabel);
             DrawModuleRefreshButton();
             EditorGUILayout.EndHorizontal();
-            GUILayout.Box("", MAI_EditorUtility.thickHorizontalLine);
+            GUILayout.Box(string.Empty, MAI_EditorUtility.thickHorizontalLine);
             for (int m = self.modules.Length - 1; m >= 0; m--)
             {
                 if (self.modules[m] == null)
@@ -235,7 +235,7 @@ namespace Kitbashery.AI
 
                     // Draw module inspector:
 
-                    EditorGUILayout.BeginVertical("box");
+                    EditorGUILayout.BeginVertical(boxStr);
                     // Note: Might be able to hide the script ref by iterating through each property with .Next() and comparing
                     // if(m_Script" == property.propertyPath) and ignoring it.
                     EditorGUI.indentLevel++;
@@ -357,7 +357,7 @@ namespace Kitbashery.AI
             if (renaming == true)
             {
                 EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
-                behaviour.FindPropertyRelative(nameStr).stringValue = EditorGUILayout.TextField(behaviour.FindPropertyRelative(nameStr).stringValue);
+                EditorGUILayout.PropertyField(behaviour.FindPropertyRelative(nameStr), MAI_EditorUtility.blankLabel);
                 if (GUILayout.Button("Apply", EditorStyles.miniButton))
                 {
                     renaming = false;
@@ -422,13 +422,13 @@ namespace Kitbashery.AI
 
                 if (list.FindPropertyRelative("Array.size").hasMultipleDifferentValues == false)
                 {
-                    EditorGUILayout.BeginVertical("box");
+                    EditorGUILayout.BeginVertical(boxStr);
                     if (list.arraySize > 0)
                     {
                         for (int i = list.arraySize - 1; i >= 0; i--)
                         {
                             SerializedProperty element = list.GetArrayElementAtIndex(i);
-                            GUILayout.Box("", MAI_EditorUtility.thickHorizontalLine);
+                            GUILayout.Box(string.Empty, MAI_EditorUtility.thickHorizontalLine);
                             if (element.FindPropertyRelative("instance").objectReferenceValue != null)
                             {
                                 EditorGUILayout.BeginHorizontal();
@@ -512,7 +512,7 @@ namespace Kitbashery.AI
                             {
                                 EditorGUILayout.HelpBox("Missing module for " + element.FindPropertyRelative(nameStr).stringValue, MessageType.Warning);
                                 EditorGUILayout.LabelField("Class name changed? Update it below then attempt repair:");
-                                element.FindPropertyRelative("moduleName").stringValue = EditorGUILayout.TextField(element.FindPropertyRelative("moduleName").stringValue);
+                                EditorGUILayout.PropertyField(element.FindPropertyRelative("moduleName"), MAI_EditorUtility.blankLabel);
                                 EditorGUILayout.LabelField("OR");
                                 if (GUILayout.Button("Remove Condition", EditorStyles.miniButton))
                                 {
@@ -526,7 +526,6 @@ namespace Kitbashery.AI
 
                     EditorGUILayout.Space();
                     DrawEventCreationGUI(list, isCondition);
-
 
                     EditorGUILayout.EndVertical();
                 }
@@ -723,7 +722,7 @@ namespace Kitbashery.AI
                     showConditions = false;
                 }
 
-                EditorGUILayout.BeginHorizontal("box");
+                EditorGUILayout.BeginHorizontal(boxStr);
                 GUILayout.Space(15);
                 EditorGUILayout.BeginVertical();
                 EditorGUILayout.Space();
