@@ -7,7 +7,7 @@
 [![OpenUPM](https://img.shields.io/badge/Install-openUPM-blue)](https://openupm.com/packages/com.kitbashery.modular-ai.html)
 [![DevKit](https://img.shields.io/badge/Dev%20Kit-.unitypackage-blue)](https://github.com/Kitbashery/Modular-AI/releases/download/Development-Package/Kitbashery_ModularAI.unitypackage)
 [![AssetStore](https://img.shields.io/badge/Download%20LTS-Unity%20Asset%20Store-blue)](https://assetstore.unity.com/packages/slug/231965)
-[![Documentation(https://img.shields.io/badge/Docs-Kitbashery.com-blue)](https://kitbashery.com/docs/modular-ai)
+[![Documentation](https://img.shields.io/badge/Docs-Kitbashery.com-blue)](https://kitbashery.com/docs/modular-ai)
 
 
 # Modular-AI
