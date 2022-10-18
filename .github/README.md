@@ -6,8 +6,8 @@
 [![GitHub](https://img.shields.io/github/license/kitbashery/modular-ai.svg)](https://github.com/Kitbashery/Modular-AI/blob/main/LICENSE)
 [![OpenUPM](https://img.shields.io/badge/Install-openUPM-blue)](https://openupm.com/packages/com.kitbashery.modular-ai.html)
 [![DevKit](https://img.shields.io/badge/Dev%20Kit-.unitypackage-blue)](https://github.com/Kitbashery/Modular-AI/releases/download/Development-Package/Kitbashery_ModularAI.unitypackage)
-[![Documentation](https://img.shields.io/badge/Docs-Kitbashery.com-blue)](https://kitbashery.com/docs/modular-ai)
-
+[![Documentation](https://img.shields.io/badge/Docs-Kitbashery.com-%23ffaf0c)](https://kitbashery.com/docs/modular-ai)
+[![Contributing](https://img.shields.io/badge/Contribute-guidelines-lightgrey)](https://github.com/Kitbashery/.github/blob/main/.github/CONTRIBUTING.md)
 
 # Modular-AI
 Modular AI is an inspector based visual behaviour designer.
