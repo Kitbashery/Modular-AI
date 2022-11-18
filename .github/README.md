@@ -55,6 +55,8 @@ https://kitbashery.com/docs/modular-ai
 
 Modular AI uses utility theory for its AI behaviour logic. An AI agent can have as many behaviours as you want.
 
+#### Note: Since v.2.0.2 Modular AI supports linear state-machine-like evaluation with optional competing utility theory behaviours.
+
 ### Behaviours:
 Behaviours are comprised of conditions and actions and have a score value. The behaviour with the score that best meets the score type you set will execute its actions.
 ### Conditions:
