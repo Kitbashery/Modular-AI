@@ -45,6 +45,12 @@ namespace Kitbashery.AI
 
         public List<AIAgent> agents = new List<AIAgent>();
 
+        [field: SerializeField, Tooltip("If true pauses all AI updates.")]
+        public bool pauseAI { get; set; } = false;
+        [Min(1), Tooltip("The amount of framerate frames between AI updates.")]
+        public int updateRate = 1;
+        private int frames = 0;
+
         private void Awake()
         {
             if (Instance == null)
@@ -60,11 +66,16 @@ namespace Kitbashery.AI
         // Update is called once per frame
         void Update()
         {
-            if(agents.Count > 0)
+            if(pauseAI == false && agents.Count > 0)
             {
-                foreach (AIAgent agent in agents)
+                frames++;
+                if(frames == updateRate)
                 {
-                    agent.UpdateAI();
+                    foreach (AIAgent agent in agents)
+                    {
+                        agent.UpdateAI();
+                    }
+                    frames = 0;
                 }
             }
         }
