@@ -71,4 +71,4 @@ Take a look at the docs for [ExampleModule.cs](https://kitbashery.com/docs/modul
 
 
 ---
-The name Kitbashery & all associated images Copyright &copy; 2022 Kitbashery. All Rights Reserved.
+The name Kitbashery & all associated images Copyright &copy; 2023 Kitbashery. All Rights Reserved.
