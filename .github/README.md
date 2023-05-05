@@ -9,8 +9,8 @@
 [![Documentation](https://img.shields.io/badge/Docs-Kitbashery.com-%23ffaf0c)](https://kitbashery.com/docs/modular-ai)
 [![Contributing](https://img.shields.io/badge/Contribute-guidelines-lightgrey)](https://github.com/Kitbashery/.github/blob/main/.github/CONTRIBUTING.md)
 
-#### Check out our latest asset, its like having all Kitbashery's tools rolled into one:
-<iframe src="https://assetstore.unity.com/linkmaker/embed/package/248930/widget-wide?pubref=1100lvf66" style="width:600px; height:130px; border:0px;"></iframe>
+#### For a more performant, stable and fully featured solution check out our latest asset:
+[![Smart GameObjects](https://kitbashery.com/assets/images/smart-gameobjects-uas-sale.jpg)](https://assetstore.unity.com/packages/slug/248930?aid=1100lvf66)
 
 # Modular-AI
 Modular AI is an inspector based visual behaviour designer.
